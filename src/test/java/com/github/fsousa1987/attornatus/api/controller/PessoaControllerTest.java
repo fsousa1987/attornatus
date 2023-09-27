@@ -1,7 +1,7 @@
 package com.github.fsousa1987.attornatus.api.controller;
 
 import com.github.fsousa1987.attornatus.api.request.SalvarPessoaRequest;
-import com.github.fsousa1987.attornatus.domain.service.PessoaService;
+import com.github.fsousa1987.attornatus.domain.service.impl.PessoaServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class PessoaControllerTest {
     MockMvc mvc;
 
     @MockBean
-    PessoaService service;
+    PessoaServiceImpl service;
 
     @Test
     @DisplayName("Deve salvar uma pessoa com sucesso")

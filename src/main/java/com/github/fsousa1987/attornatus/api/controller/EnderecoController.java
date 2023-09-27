@@ -2,7 +2,7 @@ package com.github.fsousa1987.attornatus.api.controller;
 
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
 import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
-import com.github.fsousa1987.attornatus.domain.service.EnderecoService;
+import com.github.fsousa1987.attornatus.domain.service.impl.EnderecoServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EnderecoController {
 
-    private final EnderecoService enderecoService;
+    private final EnderecoServiceImpl enderecoService;
 
     @PostMapping("/pessoas/inclusao/{idPessoa}")
     public ResponseEntity<EnderecoResponse> adicionar(@PathVariable Long idPessoa, @RequestBody @Valid EnderecoRequest enderecoRequest) {

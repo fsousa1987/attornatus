@@ -6,6 +6,7 @@ import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
 import com.github.fsousa1987.attornatus.core.mapper.PessoaMapper;
 import com.github.fsousa1987.attornatus.domain.entity.PessoaEntity;
 import com.github.fsousa1987.attornatus.domain.repository.PessoaRepository;
+import com.github.fsousa1987.attornatus.domain.service.impl.PessoaServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ public class PessoaServiceTest {
 
     @BeforeEach
     public void setUp() {
-        this.service = new PessoaService(repository, mapper);
+        this.service = new PessoaServiceImpl(repository, mapper);
     }
 
     @Test

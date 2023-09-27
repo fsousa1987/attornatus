@@ -8,6 +8,7 @@ import com.github.fsousa1987.attornatus.domain.entity.EnderecoEntity;
 import com.github.fsousa1987.attornatus.domain.entity.PessoaEntity;
 import com.github.fsousa1987.attornatus.domain.repository.EnderecoRepository;
 import com.github.fsousa1987.attornatus.domain.repository.PessoaRepository;
+import com.github.fsousa1987.attornatus.domain.service.impl.EnderecoServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ public class EnderecoServiceTest {
 
     @BeforeEach
     public void setUp() {
-        this.service = new EnderecoService(pessoaRepository, enderecoMapper, enderecoRepository);
+        this.service = new EnderecoServiceImpl(pessoaRepository, enderecoMapper, enderecoRepository);
     }
 
     @Test

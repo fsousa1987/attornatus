@@ -2,7 +2,7 @@ package com.github.fsousa1987.attornatus.api.controller;
 
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
 import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
-import com.github.fsousa1987.attornatus.domain.service.EnderecoService;
+import com.github.fsousa1987.attornatus.domain.service.impl.EnderecoServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class EnderecoControllerTest {
     MockMvc mvc;
 
     @MockBean
-    EnderecoService service;
+    EnderecoServiceImpl service;
 
     @Test
     @DisplayName("Deve adicionar um endereço para a pessoa com sucesso")
