@@ -6,7 +6,7 @@ import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
 import com.github.fsousa1987.attornatus.core.mapper.EnderecoMapper;
 import com.github.fsousa1987.attornatus.domain.entity.EnderecoEntity;
 import com.github.fsousa1987.attornatus.domain.entity.PessoaEntity;
-import com.github.fsousa1987.attornatus.domain.repository.PessoaRepository;
+import com.github.fsousa1987.attornatus.domain.repository.EnderecoRepository;
 import com.github.fsousa1987.attornatus.domain.service.EnderecoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,44 +18,56 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EnderecoServiceImpl implements EnderecoService {
 
-    private final PessoaRepository pessoaRepository;
+    private final EnderecoRepository enderecoRepository;
     private final EnderecoMapper enderecoMapper;
 
     @Transactional
     public EnderecoResponse adicionarEndereco(Long idPessoa, EnderecoRequest enderecoRequest) {
-        PessoaEntity pessoaEntity = getPessoaEntity(idPessoa);
+        List<EnderecoEntity> enderecosAchados = buscarEnderecosOuFalhar(idPessoa);
 
-        verificarAlteracaoEnderecoPrincipal(enderecoRequest, pessoaEntity);
+        verificarAlteracaoEnderecoPrincipal(enderecoRequest, enderecosAchados);
+        PessoaEntity pessoa = extrairPessoaDoEndereco(enderecosAchados);
 
-        pessoaEntity.getEnderecos().add(enderecoMapper.toEnderecoEntity(enderecoRequest));
-        pessoaEntity.getEnderecos().forEach(endereco -> endereco.setPessoa(pessoaEntity));
+        EnderecoEntity enderecoEntity = enderecoMapper.toEnderecoEntity(enderecoRequest);
+        enderecoEntity.setPessoa(pessoa);
 
-        PessoaEntity pessoaSalva = pessoaRepository.save(pessoaEntity);
-        EnderecoEntity enderecoEntity = localizarUltimoEnderecoSalvo(pessoaSalva);
+        enderecosAchados.add(enderecoEntity);
+        List<EnderecoEntity> savedEnderecos = enderecoRepository.saveAll(enderecosAchados);
 
-        return enderecoMapper.toEnderecoResponse(enderecoEntity);
+        EnderecoEntity endereco = localizarUltimoEnderecoSalvo(savedEnderecos);
+        return enderecoMapper.toEnderecoResponse(endereco);
     }
 
     @Transactional(readOnly = true)
     public List<EnderecoResponse> listarEnderecos(Long idPessoa) {
-        PessoaEntity pessoaEntity = getPessoaEntity(idPessoa);
-        return enderecoMapper.toListEnderecoResponse(pessoaEntity.getEnderecos());
+        List<EnderecoEntity> enderecos = buscarEnderecosOuFalhar(idPessoa);
+
+        return enderecoMapper.toListEnderecoResponse(enderecos);
     }
 
-    private PessoaEntity getPessoaEntity(Long idPessoa) {
-        return pessoaRepository.findById(idPessoa)
-                .orElseThrow(() -> new PessoaNaoEncontradaException("Pessoa não encontrada para o id: " + idPessoa));
-    }
-
-    private void verificarAlteracaoEnderecoPrincipal(EnderecoRequest enderecoRequest, PessoaEntity pessoaEntity) {
+    private void verificarAlteracaoEnderecoPrincipal(EnderecoRequest enderecoRequest, List<EnderecoEntity> enderecos) {
         if (enderecoRequest.getIsPrincipal()) {
-            pessoaEntity.getEnderecos().forEach(pessoa -> pessoa.setIsPrincipal(false));
+            enderecos.forEach(pessoa -> pessoa.setIsPrincipal(false));
         }
     }
 
-    private EnderecoEntity localizarUltimoEnderecoSalvo(PessoaEntity pessoaSalva) {
-        int listSize = pessoaSalva.getEnderecos().size();
-        return pessoaSalva.getEnderecos().get(listSize - 1);
+    private EnderecoEntity localizarUltimoEnderecoSalvo(List<EnderecoEntity> enderecos) {
+        int listSize = enderecos.size();
+        return enderecos.get(listSize - 1);
+    }
+
+    private PessoaEntity extrairPessoaDoEndereco(List<EnderecoEntity> enderecosAchados) {
+        return enderecosAchados.get(0).getPessoa();
+    }
+
+    private List<EnderecoEntity> buscarEnderecosOuFalhar(Long idPessoa) {
+        List<EnderecoEntity> enderecosAchados = enderecoRepository.findByPessoaId(idPessoa);
+
+        if (enderecosAchados.isEmpty()) {
+            throw new PessoaNaoEncontradaException("Pessoa não encontrada para o id: " + idPessoa);
+        }
+
+        return enderecosAchados;
     }
 
 }
