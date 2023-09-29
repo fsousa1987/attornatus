@@ -28,10 +28,9 @@ public class PessoaServiceImpl implements PessoaService {
     public PessoaResponse salvarPessoa(SalvarPessoaRequest salvarPessoaRequest) {
         validarExistenciaEnderecoPrincipal(salvarPessoaRequest);
 
-        PessoaEntity pessoaEntity = pessoaMapper.toPessoaEntity(salvarPessoaRequest);
+        final PessoaEntity pessoaEntity = pessoaMapper.toPessoaEntity(salvarPessoaRequest);
+        pessoaEntity.getEnderecos().forEach(endereco -> endereco.setPessoa(pessoaEntity));
         PessoaEntity pessoaSalva = pessoaRepository.save(pessoaEntity);
-
-        pessoaRepository.save(pessoaSalva);
         return pessoaMapper.toPessoaResponse(pessoaSalva);
     }
 

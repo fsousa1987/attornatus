@@ -44,7 +44,7 @@ public class EnderecoServiceTest {
 
     @BeforeEach
     public void setUp() {
-        this.service = new EnderecoServiceImpl(pessoaRepository, enderecoMapper, enderecoRepository);
+        this.service = new EnderecoServiceImpl(pessoaRepository, enderecoMapper);
     }
 
     @Test
@@ -65,7 +65,6 @@ public class EnderecoServiceTest {
 
         assertThat(response.getId()).isEqualTo(enderecoEntity.getId());
         verify(pessoaRepository, atLeastOnce()).findById(anyLong());
-        verify(enderecoRepository, atLeastOnce()).save(any(EnderecoEntity.class));
         verify(pessoaRepository, atLeastOnce()).save(any(PessoaEntity.class));
     }
 

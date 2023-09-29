@@ -3,6 +3,9 @@ package com.github.fsousa1987.attornatus.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "tb_endereco")
@@ -10,7 +13,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class EnderecoEntity {
+public class EnderecoEntity implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 5175171890280255216L;
 
     @EqualsAndHashCode.Include
     @Id
@@ -24,5 +30,9 @@ public class EnderecoEntity {
 
     @Column(name = "principal")
     private Boolean isPrincipal;
+
+    @ManyToOne
+    @JoinColumn(name = "pessoa_id")
+    private PessoaEntity pessoa;
 
 }

@@ -3,7 +3,7 @@ package com.github.fsousa1987.attornatus.api.controller;
 import com.github.fsousa1987.attornatus.api.request.AtualizarPessoaRequest;
 import com.github.fsousa1987.attornatus.api.request.SalvarPessoaRequest;
 import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
-import com.github.fsousa1987.attornatus.domain.service.impl.PessoaServiceImpl;
+import com.github.fsousa1987.attornatus.domain.service.PessoaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor
 public class PessoaController {
 
-    private final PessoaServiceImpl pessoaService;
+    private final PessoaService pessoaService;
 
     @PostMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<PessoaResponse> adicionar(@RequestBody @Valid SalvarPessoaRequest salvarPessoaRequest) {

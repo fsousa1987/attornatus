@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,8 +13,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class SalvarPessoaRequest {
+@EqualsAndHashCode
+public class SalvarPessoaRequest implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = -8826148077458704971L;
 
     @NotNull
     private String nome;
