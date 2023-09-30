@@ -1,7 +1,7 @@
 package com.github.fsousa1987.attornatus.api.controller;
 
 import com.github.fsousa1987.attornatus.api.request.SalvarPessoaRequest;
-import com.github.fsousa1987.attornatus.domain.service.impl.PessoaServiceImpl;
+import com.github.fsousa1987.attornatus.domain.service.PessoaService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
-import static com.github.fsousa1987.attornatus.factory.Factory.createEnderecoRequest;
 import static com.github.fsousa1987.attornatus.factory.Factory.createPessoaResponse;
+import static com.github.fsousa1987.attornatus.factory.Factory.createSalvarPessoaRequest;
 import static com.github.fsousa1987.attornatus.util.JsonResponse.asJsonString;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.any;
@@ -31,7 +31,7 @@ public class PessoaControllerTest {
     MockMvc mvc;
 
     @MockBean
-    PessoaServiceImpl service;
+    PessoaService service;
 
     @Test
     @DisplayName("Deve salvar uma pessoa com sucesso")
@@ -41,7 +41,7 @@ public class PessoaControllerTest {
 
         var request = MockMvcRequestBuilders
                 .post(PESSOA_URI)
-                .content(asJsonString(createEnderecoRequest()))
+                .content(asJsonString(createSalvarPessoaRequest()))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON);
 
@@ -54,7 +54,7 @@ public class PessoaControllerTest {
     public void atualizarUmaPessoaComSucesso() throws Exception {
         var request = MockMvcRequestBuilders
                 .put(PESSOA_URI.concat("/1"))
-                .content(asJsonString(createEnderecoRequest()))
+                .content(asJsonString(createSalvarPessoaRequest()))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON);
 

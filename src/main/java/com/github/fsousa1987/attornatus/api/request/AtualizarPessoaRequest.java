@@ -1,12 +1,11 @@
 package com.github.fsousa1987.attornatus.api.request;
 
+import com.github.fsousa1987.attornatus.core.validation.Date;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
 
 @Data
 @Builder
@@ -18,10 +17,11 @@ public class AtualizarPessoaRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -6460752133336888794L;
 
-    @NotNull
+    @NotBlank(message = "nome é um campo obrigatório")
     private String nome;
 
-    @NotBlank
-    private LocalDate dataNascimento;
+    @NotBlank(message = "data de nascimento é um campo obrigatório")
+    @Date(message = "o campo data de nascimento está inválido")
+    private String dataNascimento;
 
 }

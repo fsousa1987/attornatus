@@ -17,19 +17,19 @@ public class EnderecoRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -9158075475562277305L;
 
-    @NotNull
+    @NotBlank(message = "logradouro não pode estar em branco")
     private String logradouro;
 
-    @NotNull
+    @NotBlank(message = "cep não pode estar em branco")
     private String cep;
 
-    @NotBlank
-    private int numero;
+    @NotNull(message = "numero nao pode estar em branco")
+    private Integer numero;
 
-    @NotNull
+    @NotBlank(message = "cidade nao pode estar em branco")
     private String cidade;
 
-    @NotNull
+    @NotNull(message = "preencha se o endereço é principal")
     private Boolean isPrincipal;
 
 }

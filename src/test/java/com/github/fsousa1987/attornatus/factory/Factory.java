@@ -40,7 +40,7 @@ public class Factory {
         return SalvarPessoaRequest
                 .builder()
                 .nome("Francisco Sousa")
-                .dataNascimento(LocalDate.now().minusYears(23))
+                .dataNascimento(LocalDate.now().minusYears(23).toString())
                 .enderecos(List.of(createEnderecoRequest()))
                 .build();
     }
@@ -81,7 +81,7 @@ public class Factory {
         return AtualizarPessoaRequest
                 .builder()
                 .nome("Francisco Sousa")
-                .dataNascimento(LocalDate.now().minusYears(23))
+                .dataNascimento(LocalDate.now().minusYears(23).toString())
                 .build();
     }
 

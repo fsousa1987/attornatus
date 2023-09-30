@@ -23,7 +23,7 @@ public class PessoaController {
     private final PessoaService pessoaService;
 
     @PostMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<PessoaResponse> adicionar(@RequestBody @Valid SalvarPessoaRequest salvarPessoaRequest) {
+    public ResponseEntity<PessoaResponse> adicionar(@Valid @RequestBody SalvarPessoaRequest salvarPessoaRequest) {
         PessoaResponse pessoaResponse = pessoaService.salvarPessoa(salvarPessoaRequest);
 
         URI uri = ServletUriComponentsBuilder

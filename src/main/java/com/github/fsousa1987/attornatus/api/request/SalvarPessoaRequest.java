@@ -1,12 +1,14 @@
 package com.github.fsousa1987.attornatus.api.request;
 
+import com.github.fsousa1987.attornatus.core.validation.Date;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -19,13 +21,15 @@ public class SalvarPessoaRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -8826148077458704971L;
 
-    @NotNull
+    @NotBlank(message = "nome é um campo obrigatório")
     private String nome;
 
-    @NotBlank
-    private LocalDate dataNascimento;
+    @Date(message = "o campo data de nascimento está inválido")
+    private String dataNascimento;
 
-    @NotBlank
+    @Valid
+    @Size(min = 1)
+    @NotNull
     private List<EnderecoRequest> enderecos;
 
 }
