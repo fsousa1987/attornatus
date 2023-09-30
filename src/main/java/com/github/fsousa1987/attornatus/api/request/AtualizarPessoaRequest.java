@@ -17,11 +17,11 @@ public class AtualizarPessoaRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -6460752133336888794L;
 
-    @NotBlank
+    @NotBlank(message = "nome é um campo obrigatório")
     private String nome;
 
-    @NotBlank
-    @Date
+    @NotBlank(message = "data de nascimento é um campo obrigatório")
+    @Date(message = "o campo data de nascimento está inválido")
     private String dataNascimento;
 
 }

@@ -21,11 +21,10 @@ public class SalvarPessoaRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -8826148077458704971L;
 
-    @NotBlank(message = "nome não pode estar em branco")
+    @NotBlank(message = "nome é um campo obrigatório")
     private String nome;
 
-    @NotBlank(message = "data de nascimento não pode estar em branco")
-    @Date(message = "a data de nascimento está inválida")
+    @Date(message = "o campo data de nascimento está inválido")
     private String dataNascimento;
 
     @Valid
