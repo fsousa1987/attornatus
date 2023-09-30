@@ -1,12 +1,11 @@
 package com.github.fsousa1987.attornatus.api.request;
 
+import com.github.fsousa1987.attornatus.core.validation.Date;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
 
 @Data
 @Builder
@@ -18,10 +17,11 @@ public class AtualizarPessoaRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -6460752133336888794L;
 
-    @NotNull
+    @NotBlank
     private String nome;
 
     @NotBlank
-    private LocalDate dataNascimento;
+    @Date
+    private String dataNascimento;
 
 }
