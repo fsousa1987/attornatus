@@ -14,6 +14,9 @@ import java.util.List;
 
 public class Factory {
 
+    private Factory() {
+    }
+
     public static PessoaResponse createPessoaResponse() {
         return PessoaResponse
                 .builder()
