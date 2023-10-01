@@ -18,14 +18,20 @@ public class EnderecoEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 5175171890280255216L;
 
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @EqualsAndHashCode.Include
     private String logradouro;
+
+    @EqualsAndHashCode.Include
     private String cep;
+
+    @EqualsAndHashCode.Include
     private Integer numero;
+
+    @EqualsAndHashCode.Include
     private String cidade;
 
     @Column(name = "principal")
