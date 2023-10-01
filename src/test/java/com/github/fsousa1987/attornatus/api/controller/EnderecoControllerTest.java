@@ -40,7 +40,7 @@ public class EnderecoControllerTest {
         given(service.adicionarEndereco(anyLong(), any(EnderecoRequest.class))).willReturn(enderecoResponse);
 
         var request = MockMvcRequestBuilders
-                .post(ENDERECO_URI.concat("/pessoas/inclusao/1"))
+                .post(ENDERECO_URI.concat("/pessoas/1/inclusao"))
                 .content(asJsonString(createEnderecoRequest()))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON);

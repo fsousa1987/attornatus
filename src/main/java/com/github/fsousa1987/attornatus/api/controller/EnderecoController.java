@@ -1,5 +1,6 @@
 package com.github.fsousa1987.attornatus.api.controller;
 
+import com.github.fsousa1987.attornatus.api.request.AdicionarEnderecosLoteRequest;
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
 import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
 import com.github.fsousa1987.attornatus.domain.service.EnderecoService;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/enderecos")
@@ -19,8 +21,8 @@ public class EnderecoController {
 
     private final EnderecoService enderecoService;
 
-    @PostMapping("/pessoas/inclusao/{idPessoa}")
-    public ResponseEntity<EnderecoResponse> adicionar(@PathVariable Long idPessoa, @RequestBody @Valid EnderecoRequest enderecoRequest) {
+    @PostMapping("/pessoas/{idPessoa}/inclusao")
+    public ResponseEntity<EnderecoResponse> adicionarEndereco(@PathVariable Long idPessoa, @RequestBody @Valid EnderecoRequest enderecoRequest) {
         EnderecoResponse enderecoResponse = enderecoService.adicionarEndereco(idPessoa, enderecoRequest);
 
         URI uri = ServletUriComponentsBuilder
@@ -29,6 +31,13 @@ public class EnderecoController {
                 .buildAndExpand(enderecoResponse.getId()).toUri();
 
         return ResponseEntity.created(uri).body(enderecoResponse);
+    }
+
+    @PostMapping("/pessoas/{idPessoa}/inclusao/lote")
+    public ResponseEntity<List<EnderecoResponse>> adicionarEnderecosEmLote(@PathVariable Long idPessoa,
+                                                                           @RequestBody @Valid Set<AdicionarEnderecosLoteRequest> enderecosRequest) {
+        List<EnderecoResponse> enderecoResponses = enderecoService.adicionarEnderecosEmLote(idPessoa, enderecosRequest);
+        return ResponseEntity.ok().body(enderecoResponses);
     }
 
     @GetMapping("/pessoas/{idPessoa}")
