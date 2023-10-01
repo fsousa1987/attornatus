@@ -70,5 +70,11 @@ mvn test
 
 [Francisco Edglei de Sousa]
 
-- Continuarei comitando coisas novas nesse projeto, mesmo se não conseguir passar no processo seletivo, será ótimo para estudos. Tenho planos de colocar uma autorização e autenticação usando o Spring Security com OAuth 2 e Keycloak
+- Continuarei comitando coisas novas nesse projeto, mesmo se não conseguir passar no processo seletivo. Penso que será ótimo para estudos.
 - Agradeço se algum avaliador chegou até aqui e agradeço a oportunidade
+
+## Features Futuras (Não necessariamente seguirei a ordem abaixo)
+
+- Adição de autenticação e autorização utilizando OAuth 2.0 e Keycloak
+- Adição do Swagger para documentação das APIs
+- Publicação na nuvem AWS
