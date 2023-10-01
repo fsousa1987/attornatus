@@ -6,6 +6,7 @@ import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
 import com.github.fsousa1987.attornatus.domain.service.EnderecoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -37,7 +38,7 @@ public class EnderecoController {
     public ResponseEntity<List<EnderecoResponse>> adicionarEnderecosEmLote(@PathVariable Long idPessoa,
                                                                            @RequestBody @Valid Set<AdicionarEnderecosLoteRequest> enderecosRequest) {
         List<EnderecoResponse> enderecoResponses = enderecoService.adicionarEnderecosEmLote(idPessoa, enderecosRequest);
-        return ResponseEntity.ok().body(enderecoResponses);
+        return ResponseEntity.status(HttpStatus.CREATED).body(enderecoResponses);
     }
 
     @GetMapping("/pessoas/{idPessoa}")

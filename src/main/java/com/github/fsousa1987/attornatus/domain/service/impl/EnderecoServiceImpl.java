@@ -1,5 +1,6 @@
 package com.github.fsousa1987.attornatus.domain.service.impl;
 
+import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoLoteException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
 import com.github.fsousa1987.attornatus.api.request.AdicionarEnderecosLoteRequest;
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
@@ -49,14 +50,15 @@ public class EnderecoServiceImpl implements EnderecoService {
 
         List<EnderecoEntity> enderecosEntity = new ArrayList<>();
         converterEnderecoRequestEmEnderecoEntity(enderecosRequest, enderecosEntity);
+        PessoaEntity pessoaEntity = extrairPessoaDoEndereco(enderecosAchados);
 
         List<EnderecoEntity> enderecosElegiveisPersistencia = compararEnderecosIguais(enderecosEntity, enderecosAchados);
 
         if (!enderecosElegiveisPersistencia.isEmpty()) {
-            return processarPersistenciaEnderecosEmLote(enderecosElegiveisPersistencia, enderecosAchados);
+            return processarPersistenciaEnderecosEmLote(enderecosElegiveisPersistencia, pessoaEntity);
         }
 
-        return enderecoMapper.toListEnderecoResponse(enderecosAchados);
+        throw new InvalidEnderecoLoteException("Não existe endereços novos para adicionar");
     }
 
     @Transactional(readOnly = true)
@@ -100,13 +102,10 @@ public class EnderecoServiceImpl implements EnderecoService {
         return enderecos.stream().filter(endereco -> !enderecosAchados.contains(endereco)).toList();
     }
 
-    private List<EnderecoResponse> processarPersistenciaEnderecosEmLote(List<EnderecoEntity> enderecosElegiveis, List<EnderecoEntity> enderecosAchados) {
+    private List<EnderecoResponse> processarPersistenciaEnderecosEmLote(List<EnderecoEntity> enderecosElegiveis, PessoaEntity pessoaEntity) {
         enderecosElegiveis.forEach(endereco -> endereco.setIsPrincipal(false));
-
-        PessoaEntity pessoaEntity = extrairPessoaDoEndereco(enderecosAchados);
         enderecosElegiveis.forEach(endereco -> endereco.setPessoa(pessoaEntity));
-        enderecosAchados.addAll(enderecosElegiveis);
-        List<EnderecoEntity> enderecoEntities = enderecoRepository.saveAll(enderecosAchados);
+        List<EnderecoEntity> enderecoEntities = enderecoRepository.saveAll(enderecosElegiveis);
         return enderecoMapper.toListEnderecoResponse(enderecoEntities);
     }
 
