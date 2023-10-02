@@ -15,4 +15,6 @@ public interface EnderecoService {
 
     EnderecoLoteResponse listarEnderecos(Long idPessoa);
 
+    EnderecoResponse atualizarEndereco(Long idEndereco, EnderecoRequest enderecoRequest);
+
 }
