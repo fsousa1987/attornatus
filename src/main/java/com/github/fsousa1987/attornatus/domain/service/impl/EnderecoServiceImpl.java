@@ -1,6 +1,8 @@
 package com.github.fsousa1987.attornatus.domain.service.impl;
 
+import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.EnderecoNaoEncontradoException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoLoteException;
+import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoPrincipalException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
 import com.github.fsousa1987.attornatus.api.request.EnderecoLoteRequest;
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
@@ -12,6 +14,7 @@ import com.github.fsousa1987.attornatus.domain.entity.PessoaEntity;
 import com.github.fsousa1987.attornatus.domain.repository.EnderecoRepository;
 import com.github.fsousa1987.attornatus.domain.service.EnderecoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,6 +77,24 @@ public class EnderecoServiceImpl implements EnderecoService {
         return enderecoLoteResponse;
     }
 
+    @Transactional
+    @Override
+    public EnderecoResponse atualizarEndereco(Long idEndereco, EnderecoRequest enderecoRequest) {
+        EnderecoEntity enderecoEncontrado = enderecoRepository.findById(idEndereco)
+                .orElseThrow(() -> new EnderecoNaoEncontradoException("Endereço não encontrado para o id: " + idEndereco));
+
+        verificarPossibilidadeDeAtualizacao(enderecoEncontrado, enderecoRequest);
+
+        if (enderecoEncontrado.getIsPrincipal() == enderecoRequest.getIsPrincipal()) {
+            BeanUtils.copyProperties(enderecoRequest, enderecoEncontrado);
+            EnderecoEntity enderecoAtualizado = enderecoRepository.save(enderecoEncontrado);
+            return enderecoMapper.toEnderecoResponse(enderecoAtualizado);
+        }
+
+        EnderecoEntity enderecoAtualizado = setNovoEnderecoPrincipalAoAtualizar(enderecoRequest, enderecoEncontrado);
+        return enderecoMapper.toEnderecoResponse(enderecoAtualizado);
+    }
+
     private void verificarAlteracaoEnderecoPrincipal(EnderecoRequest enderecoRequest, List<EnderecoEntity> enderecos) {
         if (enderecoRequest.getIsPrincipal()) {
             enderecos.forEach(pessoa -> pessoa.setIsPrincipal(false));
@@ -117,6 +138,20 @@ public class EnderecoServiceImpl implements EnderecoService {
 
         enderecoLoteResponse.setEnderecos(enderecos);
         return enderecoLoteResponse;
+    }
+
+    private void verificarPossibilidadeDeAtualizacao(EnderecoEntity enderecoEntity, EnderecoRequest enderecoRequest) {
+        if (enderecoEntity.getIsPrincipal() && !enderecoRequest.getIsPrincipal()) {
+            throw new InvalidEnderecoPrincipalException("Deve haver pelo menos um endereço principal");
+        }
+    }
+
+    private EnderecoEntity setNovoEnderecoPrincipalAoAtualizar(EnderecoRequest enderecoRequest, EnderecoEntity enderecoEntity) {
+        BeanUtils.copyProperties(enderecoRequest, enderecoEntity);
+        List<EnderecoEntity> enderecos = enderecoEntity.getPessoa().getEnderecos();
+        enderecos.forEach(endereco -> endereco.setIsPrincipal(false));
+        enderecoEntity.setIsPrincipal(true);
+        return enderecoRepository.save(enderecoEntity);
     }
 
 }

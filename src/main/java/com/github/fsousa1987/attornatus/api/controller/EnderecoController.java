@@ -48,4 +48,10 @@ public class EnderecoController {
         return ResponseEntity.ok().body(enderecoLoteResponse);
     }
 
+    @PutMapping(value = "/{idEndereco}", consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<EnderecoResponse> atualizar(@PathVariable Long idEndereco, @RequestBody @Valid EnderecoRequest enderecoRequest) {
+        EnderecoResponse enderecoResponse = enderecoService.atualizarEndereco(idEndereco, enderecoRequest);
+        return ResponseEntity.ok().body(enderecoResponse);
+    }
+
 }

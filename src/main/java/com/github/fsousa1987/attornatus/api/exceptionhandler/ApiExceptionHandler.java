@@ -1,6 +1,7 @@
 package com.github.fsousa1987.attornatus.api.exceptionhandler;
 
 import com.github.fsousa1987.attornatus.api.exceptionhandler.enums.ProblemType;
+import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.EnderecoNaoEncontradoException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoLoteException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoPrincipalException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
@@ -68,6 +69,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ProblemType problemType = ProblemType.INVALID_LOTE_ADDRESS;
+        String detail = ex.getMessage();
+
+        Problem problem = createProblemBuilder(status, problemType, detail).build();
+
+        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(EnderecoNaoEncontradoException.class)
+    public ResponseEntity<?> handleEnderecoNaoEncontradoException(EnderecoNaoEncontradoException ex, WebRequest request) {
+
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        ProblemType problemType = ProblemType.RESOURCE_NOT_FOUND;
         String detail = ex.getMessage();
 
         Problem problem = createProblemBuilder(status, problemType, detail).build();
