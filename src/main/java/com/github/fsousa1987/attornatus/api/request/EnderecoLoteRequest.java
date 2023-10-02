@@ -13,7 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AtualizarEnderecoRequest extends EnderecoRequest implements Serializable {
+public class EnderecoLoteRequest extends EnderecoRequest implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -8780241178200772086L;

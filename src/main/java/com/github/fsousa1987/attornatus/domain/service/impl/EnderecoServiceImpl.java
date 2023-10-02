@@ -2,7 +2,7 @@ package com.github.fsousa1987.attornatus.domain.service.impl;
 
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoLoteException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
-import com.github.fsousa1987.attornatus.api.request.AtualizarEnderecoRequest;
+import com.github.fsousa1987.attornatus.api.request.EnderecoLoteRequest;
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
 import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
 import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
@@ -47,7 +47,7 @@ public class EnderecoServiceImpl implements EnderecoService {
 
     @Transactional
     @Override
-    public EnderecoLoteResponse adicionarEnderecosEmLote(Long idPessoa, Set<AtualizarEnderecoRequest> enderecosRequest) {
+    public EnderecoLoteResponse adicionarEnderecosEmLote(Long idPessoa, Set<EnderecoLoteRequest> enderecosRequest) {
         List<EnderecoEntity> enderecosAchados = buscarEnderecosOuFalhar(idPessoa);
 
         List<EnderecoEntity> enderecosEntity = new ArrayList<>();
@@ -99,7 +99,7 @@ public class EnderecoServiceImpl implements EnderecoService {
         return enderecosAchados;
     }
 
-    private void converterEnderecoRequestEmEnderecoEntity(Set<AtualizarEnderecoRequest> enderecosRequests, List<EnderecoEntity> enderecos) {
+    private void converterEnderecoRequestEmEnderecoEntity(Set<EnderecoLoteRequest> enderecosRequests, List<EnderecoEntity> enderecos) {
         enderecosRequests.forEach(endereco -> enderecos.add(enderecoMapper.toEnderecoEntity(endereco)));
     }
 
