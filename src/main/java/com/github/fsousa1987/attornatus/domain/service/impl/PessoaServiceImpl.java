@@ -25,6 +25,7 @@ public class PessoaServiceImpl implements PessoaService {
     private final PessoaMapper pessoaMapper;
 
     @Transactional
+    @Override
     public PessoaResponse salvarPessoa(SalvarPessoaRequest salvarPessoaRequest) {
         validarExistenciaEnderecoPrincipal(salvarPessoaRequest);
 
@@ -35,6 +36,7 @@ public class PessoaServiceImpl implements PessoaService {
     }
 
     @Transactional
+    @Override
     public void atualizarPessoa(Long id, AtualizarPessoaRequest atualizarPessoaRequest) {
         PessoaEntity pessoaEntity = buscarOuFalhar(id);
         BeanUtils.copyProperties(atualizarPessoaRequest, pessoaEntity);
@@ -42,12 +44,14 @@ public class PessoaServiceImpl implements PessoaService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public PessoaResponse buscarPorId(Long id) {
         PessoaEntity pessoaEntity = buscarOuFalhar(id);
         return pessoaMapper.toPessoaResponse(pessoaEntity);
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<PessoaResponse> buscarTodas() {
         List<PessoaEntity> pessoasEntity = pessoaRepository.findAll();
         return pessoaMapper.toListPessoaResponse(pessoasEntity);
@@ -62,7 +66,7 @@ public class PessoaServiceImpl implements PessoaService {
         List<EnderecoRequest> enderecos = salvarPessoaRequest.getEnderecos();
 
         long count = enderecos.stream().filter(EnderecoRequest::getIsPrincipal).count();
-        if (count > 1 || count == 0) {
+        if (count != 1) {
             throw new InvalidEnderecoPrincipalException("Precisa ter um endereço principal");
         }
     }

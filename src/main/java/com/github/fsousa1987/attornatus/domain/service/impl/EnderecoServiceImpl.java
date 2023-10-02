@@ -2,8 +2,9 @@ package com.github.fsousa1987.attornatus.domain.service.impl;
 
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoLoteException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
-import com.github.fsousa1987.attornatus.api.request.AdicionarEnderecosLoteRequest;
+import com.github.fsousa1987.attornatus.api.request.AtualizarEnderecoRequest;
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
+import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
 import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
 import com.github.fsousa1987.attornatus.core.mapper.EnderecoMapper;
 import com.github.fsousa1987.attornatus.domain.entity.EnderecoEntity;
@@ -22,6 +23,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class EnderecoServiceImpl implements EnderecoService {
 
+    private final EnderecoLoteResponse enderecoLoteResponse;
     private final EnderecoRepository enderecoRepository;
     private final EnderecoMapper enderecoMapper;
 
@@ -45,7 +47,7 @@ public class EnderecoServiceImpl implements EnderecoService {
 
     @Transactional
     @Override
-    public List<EnderecoResponse> adicionarEnderecosEmLote(Long idPessoa, Set<AdicionarEnderecosLoteRequest> enderecosRequest) {
+    public EnderecoLoteResponse adicionarEnderecosEmLote(Long idPessoa, Set<AtualizarEnderecoRequest> enderecosRequest) {
         List<EnderecoEntity> enderecosAchados = buscarEnderecosOuFalhar(idPessoa);
 
         List<EnderecoEntity> enderecosEntity = new ArrayList<>();
@@ -63,10 +65,13 @@ public class EnderecoServiceImpl implements EnderecoService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<EnderecoResponse> listarEnderecos(Long idPessoa) {
+    public EnderecoLoteResponse listarEnderecos(Long idPessoa) {
+
         List<EnderecoEntity> enderecos = buscarEnderecosOuFalhar(idPessoa);
 
-        return enderecoMapper.toListEnderecoResponse(enderecos);
+        List<EnderecoResponse> enderecoResponse = enderecoMapper.toListEnderecoResponse(enderecos);
+        enderecoLoteResponse.setEnderecos(enderecoResponse);
+        return enderecoLoteResponse;
     }
 
     private void verificarAlteracaoEnderecoPrincipal(EnderecoRequest enderecoRequest, List<EnderecoEntity> enderecos) {
@@ -94,7 +99,7 @@ public class EnderecoServiceImpl implements EnderecoService {
         return enderecosAchados;
     }
 
-    private void converterEnderecoRequestEmEnderecoEntity(Set<AdicionarEnderecosLoteRequest> enderecosRequests, List<EnderecoEntity> enderecos) {
+    private void converterEnderecoRequestEmEnderecoEntity(Set<AtualizarEnderecoRequest> enderecosRequests, List<EnderecoEntity> enderecos) {
         enderecosRequests.forEach(endereco -> enderecos.add(enderecoMapper.toEnderecoEntity(endereco)));
     }
 
@@ -102,11 +107,16 @@ public class EnderecoServiceImpl implements EnderecoService {
         return enderecos.stream().filter(endereco -> !enderecosAchados.contains(endereco)).toList();
     }
 
-    private List<EnderecoResponse> processarPersistenciaEnderecosEmLote(List<EnderecoEntity> enderecosElegiveis, PessoaEntity pessoaEntity) {
-        enderecosElegiveis.forEach(endereco -> endereco.setIsPrincipal(false));
-        enderecosElegiveis.forEach(endereco -> endereco.setPessoa(pessoaEntity));
+    private EnderecoLoteResponse processarPersistenciaEnderecosEmLote(List<EnderecoEntity> enderecosElegiveis, PessoaEntity pessoaEntity) {
+        enderecosElegiveis.forEach(endereco -> {
+            endereco.setIsPrincipal(false);
+            endereco.setPessoa(pessoaEntity);
+        });
         List<EnderecoEntity> enderecoEntities = enderecoRepository.saveAll(enderecosElegiveis);
-        return enderecoMapper.toListEnderecoResponse(enderecoEntities);
+        List<EnderecoResponse> enderecos = enderecoMapper.toEnderecoLoteResponse(enderecoEntities);
+
+        enderecoLoteResponse.setEnderecos(enderecos);
+        return enderecoLoteResponse;
     }
 
 }

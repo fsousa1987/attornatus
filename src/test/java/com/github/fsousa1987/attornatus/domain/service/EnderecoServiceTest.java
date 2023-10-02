@@ -2,6 +2,7 @@ package com.github.fsousa1987.attornatus.domain.service;
 
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
+import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
 import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
 import com.github.fsousa1987.attornatus.core.mapper.EnderecoMapper;
 import com.github.fsousa1987.attornatus.domain.entity.EnderecoEntity;
@@ -32,11 +33,14 @@ public class EnderecoServiceTest {
     EnderecoRepository enderecoRepository;
 
     @MockBean
+    EnderecoLoteResponse enderecoLoteResponse;
+
+    @MockBean
     EnderecoMapper enderecoMapper;
 
     @BeforeEach
     public void setUp() {
-        this.service = new EnderecoServiceImpl(enderecoRepository, enderecoMapper);
+        this.service = new EnderecoServiceImpl(enderecoLoteResponse, enderecoRepository, enderecoMapper);
     }
 
     @Test
@@ -66,10 +70,11 @@ public class EnderecoServiceTest {
 
         when(enderecoRepository.findByPessoaId(anyLong())).thenReturn(List.of(enderecoEntity));
         when(enderecoMapper.toListEnderecoResponse(anyList())).thenReturn(List.of(enderecoResponse));
+        when(enderecoLoteResponse.getEnderecos()).thenReturn(List.of(enderecoResponse));
 
-        List<EnderecoResponse> enderecoResponses = service.listarEnderecos(1L);
+        enderecoLoteResponse = service.listarEnderecos(1L);
 
-        assertFalse(enderecoResponses.isEmpty());
+        assertFalse(enderecoLoteResponse.getEnderecos().isEmpty());
         verify(enderecoRepository, atLeastOnce()).findByPessoaId(anyLong());
     }
 

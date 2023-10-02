@@ -1,6 +1,7 @@
 package com.github.fsousa1987.attornatus.api.controller;
 
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
+import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
 import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
 import com.github.fsousa1987.attornatus.domain.service.impl.EnderecoServiceImpl;
 import org.junit.jupiter.api.DisplayName;
@@ -11,10 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.List;
-
-import static com.github.fsousa1987.attornatus.factory.Factory.createEnderecoRequest;
-import static com.github.fsousa1987.attornatus.factory.Factory.createEnderecoResponse;
+import static com.github.fsousa1987.attornatus.factory.Factory.*;
 import static com.github.fsousa1987.attornatus.util.JsonResponse.asJsonString;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -52,7 +50,8 @@ public class EnderecoControllerTest {
     @Test
     @DisplayName("Deve recuperar todos os endereços de uma pessoa")
     public void recuperarTodosEnderecosPessoa() throws Exception {
-        given(service.listarEnderecos(anyLong())).willReturn(List.of(createEnderecoResponse()));
+        EnderecoLoteResponse enderecoLoteResponse = createEnderecoLoteResponse();
+        given(service.listarEnderecos(anyLong())).willReturn(enderecoLoteResponse);
 
         var request = MockMvcRequestBuilders
                 .get(ENDERECO_URI.concat("/pessoas/1"))
