@@ -2,12 +2,13 @@ package com.github.fsousa1987.attornatus.domain.service.impl;
 
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoPrincipalException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
-import com.github.fsousa1987.attornatus.api.request.pessoa.AtualizarPessoaRequest;
 import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
+import com.github.fsousa1987.attornatus.api.request.pessoa.AtualizarPessoaRequest;
 import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
 import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
 import com.github.fsousa1987.attornatus.core.mapper.PessoaMapper;
 import com.github.fsousa1987.attornatus.domain.entity.PessoaEntity;
+import com.github.fsousa1987.attornatus.domain.repository.EnderecoRepository;
 import com.github.fsousa1987.attornatus.domain.repository.PessoaRepository;
 import com.github.fsousa1987.attornatus.domain.service.PessoaService;
 import lombok.RequiredArgsConstructor;
@@ -22,16 +23,26 @@ import java.util.List;
 public class PessoaServiceImpl implements PessoaService {
 
     private final PessoaRepository pessoaRepository;
+    private final EnderecoRepository enderecoRepository;
     private final PessoaMapper pessoaMapper;
 
     @Transactional
     @Override
-    public PessoaResponse salvarPessoa(SalvarPessoaRequest salvarPessoaRequest) {
-        validarExistenciaEnderecoPrincipal(salvarPessoaRequest);
+    public PessoaResponse salvarPessoa(SalvarPessoaRequest request) {
+        validarExistenciaEnderecoPrincipal(request);
 
-        final PessoaEntity pessoaEntity = pessoaMapper.toPessoaEntity(salvarPessoaRequest);
-        pessoaEntity.getEnderecos().forEach(endereco -> endereco.setPessoa(pessoaEntity));
-        PessoaEntity pessoaSalva = pessoaRepository.save(pessoaEntity);
+        var pessoaEntity = pessoaMapper.toPessoaEntity(request);
+        var pessoaSalva = pessoaRepository.save(pessoaEntity);
+
+        pessoaSalva.getEnderecos().forEach(endereco -> {
+            var pessoa = PessoaEntity
+                    .builder()
+                    .id(pessoaSalva.getId())
+                    .build();
+            endereco.setPessoa(pessoa);
+        });
+
+        enderecoRepository.saveAll(pessoaSalva.getEnderecos());
         return pessoaMapper.toPessoaResponse(pessoaSalva);
     }
 
