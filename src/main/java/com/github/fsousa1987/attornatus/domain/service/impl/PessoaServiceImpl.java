@@ -2,9 +2,9 @@ package com.github.fsousa1987.attornatus.domain.service.impl;
 
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoPrincipalException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
-import com.github.fsousa1987.attornatus.api.request.AtualizarPessoaRequest;
-import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
-import com.github.fsousa1987.attornatus.api.request.SalvarPessoaRequest;
+import com.github.fsousa1987.attornatus.api.request.pessoa.AtualizarPessoaRequest;
+import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
+import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
 import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
 import com.github.fsousa1987.attornatus.core.mapper.PessoaMapper;
 import com.github.fsousa1987.attornatus.domain.entity.PessoaEntity;

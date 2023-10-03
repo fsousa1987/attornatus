@@ -1,7 +1,7 @@
 package com.github.fsousa1987.attornatus.api.controller;
 
-import com.github.fsousa1987.attornatus.api.request.AtualizarPessoaRequest;
-import com.github.fsousa1987.attornatus.api.request.SalvarPessoaRequest;
+import com.github.fsousa1987.attornatus.api.request.pessoa.AtualizarPessoaRequest;
+import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
 import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
 import com.github.fsousa1987.attornatus.domain.service.PessoaService;
 import jakarta.validation.Valid;

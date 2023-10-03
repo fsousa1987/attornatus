@@ -1,4 +1,4 @@
-package com.github.fsousa1987.attornatus.api.request;
+package com.github.fsousa1987.attornatus.api.request.pessoa;
 
 import com.github.fsousa1987.attornatus.core.validation.Date;
 import jakarta.validation.constraints.NotBlank;

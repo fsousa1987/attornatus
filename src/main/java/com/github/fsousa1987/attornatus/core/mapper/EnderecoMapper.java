@@ -1,7 +1,7 @@
 package com.github.fsousa1987.attornatus.core.mapper;
 
-import com.github.fsousa1987.attornatus.api.request.AtualizarEnderecoRequest;
-import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
+import com.github.fsousa1987.attornatus.api.request.endereco.AtualizarEnderecoRequest;
+import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
 import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
 import com.github.fsousa1987.attornatus.domain.entity.EnderecoEntity;
 import org.mapstruct.Mapper;

@@ -1,6 +1,6 @@
 package com.github.fsousa1987.attornatus.api.controller;
 
-import com.github.fsousa1987.attornatus.api.request.SalvarPessoaRequest;
+import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
 import com.github.fsousa1987.attornatus.domain.service.PessoaService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

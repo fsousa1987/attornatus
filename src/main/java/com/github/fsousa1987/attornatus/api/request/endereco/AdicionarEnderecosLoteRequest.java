@@ -1,4 +1,4 @@
-package com.github.fsousa1987.attornatus.api.request;
+package com.github.fsousa1987.attornatus.api.request.endereco;
 
 import lombok.*;
 

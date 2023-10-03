@@ -1,4 +1,4 @@
-package com.github.fsousa1987.attornatus.api.request;
+package com.github.fsousa1987.attornatus.api.request.endereco;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,10 +12,10 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class AtualizarEnderecoRequest implements Serializable {
+public class EnderecoRequest implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = 726434866200169290L;
+    private static final long serialVersionUID = -9158075475562277305L;
 
     @NotBlank(message = "logradouro não pode estar em branco")
     private String logradouro;
@@ -28,5 +28,8 @@ public class AtualizarEnderecoRequest implements Serializable {
 
     @NotBlank(message = "cidade nao pode estar em branco")
     private String cidade;
+
+    @NotNull(message = "preencha se o endereço é principal")
+    private Boolean isPrincipal;
 
 }
