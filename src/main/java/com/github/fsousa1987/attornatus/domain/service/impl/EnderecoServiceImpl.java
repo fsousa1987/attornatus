@@ -2,8 +2,8 @@ package com.github.fsousa1987.attornatus.domain.service.impl;
 
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.EnderecoNaoEncontradoException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoLoteException;
-import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoPrincipalException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
+import com.github.fsousa1987.attornatus.api.request.AtualizarEnderecoRequest;
 import com.github.fsousa1987.attornatus.api.request.EnderecoLoteRequest;
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
 import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
@@ -33,7 +33,7 @@ public class EnderecoServiceImpl implements EnderecoService {
     @Transactional
     @Override
     public EnderecoResponse adicionarEndereco(Long idPessoa, EnderecoRequest enderecoRequest) {
-        List<EnderecoEntity> enderecosAchados = buscarEnderecosOuFalhar(idPessoa);
+        List<EnderecoEntity> enderecosAchados = buscarPessoasOuFalhar(idPessoa);
 
         verificarAlteracaoEnderecoPrincipal(enderecoRequest, enderecosAchados);
         PessoaEntity pessoa = extrairPessoaDoEndereco(enderecosAchados);
@@ -51,7 +51,7 @@ public class EnderecoServiceImpl implements EnderecoService {
     @Transactional
     @Override
     public EnderecoLoteResponse adicionarEnderecosEmLote(Long idPessoa, Set<EnderecoLoteRequest> enderecosRequest) {
-        List<EnderecoEntity> enderecosAchados = buscarEnderecosOuFalhar(idPessoa);
+        List<EnderecoEntity> enderecosAchados = buscarPessoasOuFalhar(idPessoa);
 
         List<EnderecoEntity> enderecosEntity = new ArrayList<>();
         converterEnderecoRequestEmEnderecoEntity(enderecosRequest, enderecosEntity);
@@ -70,7 +70,7 @@ public class EnderecoServiceImpl implements EnderecoService {
     @Override
     public EnderecoLoteResponse listarEnderecos(Long idPessoa) {
 
-        List<EnderecoEntity> enderecos = buscarEnderecosOuFalhar(idPessoa);
+        List<EnderecoEntity> enderecos = buscarPessoasOuFalhar(idPessoa);
 
         List<EnderecoResponse> enderecoResponse = enderecoMapper.toListEnderecoResponse(enderecos);
         enderecoLoteResponse.setEnderecos(enderecoResponse);
@@ -79,19 +79,31 @@ public class EnderecoServiceImpl implements EnderecoService {
 
     @Transactional
     @Override
-    public EnderecoResponse atualizarEndereco(Long idEndereco, EnderecoRequest enderecoRequest) {
-        EnderecoEntity enderecoEncontrado = enderecoRepository.findById(idEndereco)
-                .orElseThrow(() -> new EnderecoNaoEncontradoException("Endereço não encontrado para o id: " + idEndereco));
+    public EnderecoResponse atualizarEndereco(Long idEndereco, AtualizarEnderecoRequest enderecoRequest) {
+        EnderecoEntity enderecoEncontrado = buscarEnderecoOuFalhar(idEndereco);
 
-        verificarPossibilidadeDeAtualizacao(enderecoEncontrado, enderecoRequest);
+        EnderecoEntity enderecoEntity = enderecoMapper.toEnderecoEntity(enderecoRequest);
 
-        if (enderecoEncontrado.getIsPrincipal() == enderecoRequest.getIsPrincipal()) {
-            BeanUtils.copyProperties(enderecoRequest, enderecoEncontrado);
-            EnderecoEntity enderecoAtualizado = enderecoRepository.save(enderecoEncontrado);
-            return enderecoMapper.toEnderecoResponse(enderecoAtualizado);
+        if (enderecoEncontrado.equals(enderecoEntity)) {
+            throw new InvalidEnderecoLoteException("Endereço já existente na base de dados");
         }
 
-        EnderecoEntity enderecoAtualizado = setNovoEnderecoPrincipalAoAtualizar(enderecoRequest, enderecoEncontrado);
+        BeanUtils.copyProperties(enderecoRequest, enderecoEncontrado);
+        EnderecoEntity enderecoAtualizado = enderecoRepository.save(enderecoEncontrado);
+        return enderecoMapper.toEnderecoResponse(enderecoAtualizado);
+    }
+
+    @Transactional
+    @Override
+    public EnderecoResponse alterarPrincipal(Long idEndereco) {
+        EnderecoEntity enderecoAchado = buscarEnderecoOuFalhar(idEndereco);
+
+        List<EnderecoEntity> enderecos = enderecoAchado.getPessoa().getEnderecos();
+        enderecos.forEach(endereco -> endereco.setIsPrincipal(false));
+
+        enderecoAchado.setIsPrincipal(true);
+        EnderecoEntity enderecoAtualizado = enderecoRepository.save(enderecoAchado);
+
         return enderecoMapper.toEnderecoResponse(enderecoAtualizado);
     }
 
@@ -110,7 +122,7 @@ public class EnderecoServiceImpl implements EnderecoService {
         return enderecosAchados.get(0).getPessoa();
     }
 
-    private List<EnderecoEntity> buscarEnderecosOuFalhar(Long idPessoa) {
+    private List<EnderecoEntity> buscarPessoasOuFalhar(Long idPessoa) {
         List<EnderecoEntity> enderecosAchados = enderecoRepository.findByPessoaId(idPessoa);
 
         if (enderecosAchados.isEmpty()) {
@@ -140,18 +152,9 @@ public class EnderecoServiceImpl implements EnderecoService {
         return enderecoLoteResponse;
     }
 
-    private void verificarPossibilidadeDeAtualizacao(EnderecoEntity enderecoEntity, EnderecoRequest enderecoRequest) {
-        if (enderecoEntity.getIsPrincipal() && !enderecoRequest.getIsPrincipal()) {
-            throw new InvalidEnderecoPrincipalException("Deve haver pelo menos um endereço principal");
-        }
-    }
-
-    private EnderecoEntity setNovoEnderecoPrincipalAoAtualizar(EnderecoRequest enderecoRequest, EnderecoEntity enderecoEntity) {
-        BeanUtils.copyProperties(enderecoRequest, enderecoEntity);
-        List<EnderecoEntity> enderecos = enderecoEntity.getPessoa().getEnderecos();
-        enderecos.forEach(endereco -> endereco.setIsPrincipal(false));
-        enderecoEntity.setIsPrincipal(true);
-        return enderecoRepository.save(enderecoEntity);
+    private EnderecoEntity buscarEnderecoOuFalhar(Long idEndereco) {
+        return enderecoRepository.findById(idEndereco)
+                .orElseThrow(() -> new EnderecoNaoEncontradoException("Endereço não encontrado para o id: " + idEndereco));
     }
 
 }

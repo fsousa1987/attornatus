@@ -1,5 +1,6 @@
 package com.github.fsousa1987.attornatus.domain.service;
 
+import com.github.fsousa1987.attornatus.api.request.AtualizarEnderecoRequest;
 import com.github.fsousa1987.attornatus.api.request.EnderecoLoteRequest;
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
 import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
@@ -15,6 +16,7 @@ public interface EnderecoService {
 
     EnderecoLoteResponse listarEnderecos(Long idPessoa);
 
-    EnderecoResponse atualizarEndereco(Long idEndereco, EnderecoRequest enderecoRequest);
+    EnderecoResponse atualizarEndereco(Long idEndereco, AtualizarEnderecoRequest enderecoRequest);
 
+    EnderecoResponse alterarPrincipal(Long idEndereco);
 }

@@ -1,6 +1,7 @@
 package com.github.fsousa1987.attornatus.api.controller;
 
 import com.github.fsousa1987.attornatus.api.request.AdicionarEnderecosLoteRequest;
+import com.github.fsousa1987.attornatus.api.request.AtualizarEnderecoRequest;
 import com.github.fsousa1987.attornatus.api.request.EnderecoRequest;
 import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
 import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
@@ -49,8 +50,14 @@ public class EnderecoController {
     }
 
     @PutMapping(value = "/{idEndereco}", consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<EnderecoResponse> atualizar(@PathVariable Long idEndereco, @RequestBody @Valid EnderecoRequest enderecoRequest) {
-        EnderecoResponse enderecoResponse = enderecoService.atualizarEndereco(idEndereco, enderecoRequest);
+    public ResponseEntity<EnderecoResponse> atualizar(@PathVariable Long idEndereco, @RequestBody @Valid AtualizarEnderecoRequest request) {
+        EnderecoResponse enderecoResponse = enderecoService.atualizarEndereco(idEndereco, request);
+        return ResponseEntity.ok().body(enderecoResponse);
+    }
+
+    @PutMapping(value = "/{idEndereco}/alteracao/principal")
+    public ResponseEntity<EnderecoResponse> alterarPrincipal(@PathVariable Long idEndereco) {
+        EnderecoResponse enderecoResponse = enderecoService.alterarPrincipal(idEndereco);
         return ResponseEntity.ok().body(enderecoResponse);
     }
 
