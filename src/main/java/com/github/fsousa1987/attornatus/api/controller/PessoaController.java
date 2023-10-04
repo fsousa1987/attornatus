@@ -1,6 +1,6 @@
 package com.github.fsousa1987.attornatus.api.controller;
 
-import com.github.fsousa1987.attornatus.api.request.pessoa.AtualizarPessoaRequest;
+import com.github.fsousa1987.attornatus.api.request.pessoa.PessoaRequest;
 import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
 import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
 import com.github.fsousa1987.attornatus.domain.service.PessoaService;
@@ -23,8 +23,8 @@ public class PessoaController {
     private final PessoaService pessoaService;
 
     @PostMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<PessoaResponse> adicionar(@Valid @RequestBody SalvarPessoaRequest salvarPessoaRequest) {
-        PessoaResponse pessoaResponse = pessoaService.salvarPessoa(salvarPessoaRequest);
+    public ResponseEntity<PessoaResponse> adicionar(@Valid @RequestBody SalvarPessoaRequest request) {
+        PessoaResponse pessoaResponse = pessoaService.salvarPessoa(request);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -35,8 +35,8 @@ public class PessoaController {
     }
 
     @PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizarPessoaRequest atualizarPessoaRequest) {
-        pessoaService.atualizarPessoa(id, atualizarPessoaRequest);
+    public ResponseEntity<Void> atualizar(@PathVariable Long id, @RequestBody @Valid PessoaRequest request) {
+        pessoaService.atualizarPessoa(id, request);
         return ResponseEntity.noContent().build();
     }
 

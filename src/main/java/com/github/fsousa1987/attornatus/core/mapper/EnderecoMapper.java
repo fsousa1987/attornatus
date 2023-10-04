@@ -13,6 +13,8 @@ public interface EnderecoMapper {
 
     EnderecoEntity toEnderecoEntity(EnderecoRequest enderecoRequest);
 
+    List<EnderecoEntity> toListEnderecoEntity(List<EnderecoRequest> enderecos);
+
     EnderecoResponse toEnderecoResponse(EnderecoEntity enderecoEntity);
 
     List<EnderecoResponse> toListEnderecoResponse(List<EnderecoEntity> enderecoEntityList);

@@ -1,6 +1,6 @@
 package com.github.fsousa1987.attornatus.api.controller;
 
-import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
+import com.github.fsousa1987.attornatus.api.request.pessoa.PessoaRequest;
 import com.github.fsousa1987.attornatus.domain.service.PessoaService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ public class PessoaControllerTest {
     @DisplayName("Deve salvar uma pessoa com sucesso")
     public void salvarUmaPessoaComSucesso() throws Exception {
 
-        given(service.salvarPessoa(any(SalvarPessoaRequest.class))).willReturn(createPessoaResponse());
+        given(service.salvarPessoa(any(PessoaRequest.class))).willReturn(createPessoaResponse());
 
         var request = MockMvcRequestBuilders
                 .post(PESSOA_URI)

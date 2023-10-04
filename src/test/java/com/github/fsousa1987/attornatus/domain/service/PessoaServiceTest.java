@@ -1,9 +1,9 @@
 package com.github.fsousa1987.attornatus.domain.service;
 
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoPrincipalException;
-import com.github.fsousa1987.attornatus.api.request.pessoa.AtualizarPessoaRequest;
-import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
+import com.github.fsousa1987.attornatus.api.request.pessoa.PessoaRequest;
 import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
+import com.github.fsousa1987.attornatus.core.mapper.EnderecoMapper;
 import com.github.fsousa1987.attornatus.core.mapper.PessoaMapper;
 import com.github.fsousa1987.attornatus.domain.entity.EnderecoEntity;
 import com.github.fsousa1987.attornatus.domain.entity.PessoaEntity;
@@ -38,11 +38,14 @@ public class PessoaServiceTest {
     EnderecoRepository enderecoRepository;
 
     @MockBean
-    PessoaMapper mapper;
+    PessoaMapper pessoaMapper;
+
+    @MockBean
+    EnderecoMapper enderecoMapper;
 
     @BeforeEach
     public void setUp() {
-        this.service = new PessoaServiceImpl(pessoaRepository, enderecoRepository, mapper);
+        this.service = new PessoaServiceImpl(pessoaRepository, enderecoRepository, pessoaMapper, enderecoMapper);
     }
 
     @Test
@@ -52,10 +55,10 @@ public class PessoaServiceTest {
         EnderecoEntity enderecoEntity = createEnderecoEntity();
         PessoaResponse pessoaResponse = createPessoaResponse();
 
-        when(mapper.toPessoaEntity(any(SalvarPessoaRequest.class))).thenReturn(pessoaEntity);
+        when(pessoaMapper.toPessoaEntity(any(PessoaRequest.class))).thenReturn(pessoaEntity);
         when(pessoaRepository.save(any(PessoaEntity.class))).thenReturn(createPessoaEntity());
         when(enderecoRepository.saveAll(anyList())).thenReturn(List.of(enderecoEntity));
-        when(mapper.toPessoaResponse(any(PessoaEntity.class))).thenReturn(pessoaResponse);
+        when(pessoaMapper.toPessoaResponse(any(PessoaEntity.class))).thenReturn(pessoaResponse);
 
         PessoaResponse response = service.salvarPessoa(createSalvarPessoaRequest());
 
@@ -70,8 +73,8 @@ public class PessoaServiceTest {
     @Test
     @DisplayName("Deve lançar uma exceção ao tentar salvar uma pessoa sem um endereço principal")
     public void deveLancarUmaExcecaoQuandoAPessoaNaoTemEnderecoPrincipal() {
-        SalvarPessoaRequest salvarPessoaRequest = createSalvarPessoaRequest();
-        salvarPessoaRequest.getEnderecos().get(0).setIsPrincipal(false);
+        PessoaRequest salvarPessoaRequest = createSalvarPessoaRequest();
+        salvarPessoaRequest.listaDeEnderecos().get(0).setIsPrincipal(false);
 
         assertThrows(InvalidEnderecoPrincipalException.class,
                 () -> service.salvarPessoa(salvarPessoaRequest));
@@ -81,7 +84,7 @@ public class PessoaServiceTest {
     @DisplayName("Deve atualizar uma pessoa com sucesso")
     public void atualizarUmaPessoaComSucesso() {
         PessoaEntity pessoaEntity = createPessoaEntity();
-        AtualizarPessoaRequest atualizarPessoaRequest = createAtualizarPessoaRequest();
+        PessoaRequest atualizarPessoaRequest = createAtualizarPessoaRequest();
 
         when(pessoaRepository.findById(anyLong())).thenReturn(Optional.of(pessoaEntity));
         when(pessoaRepository.save(any(PessoaEntity.class))).thenReturn(pessoaEntity);
@@ -99,7 +102,7 @@ public class PessoaServiceTest {
         PessoaResponse pessoaResponse = createPessoaResponse();
 
         when(pessoaRepository.findById(anyLong())).thenReturn(Optional.of(pessoaEntity));
-        when(mapper.toPessoaResponse(any(PessoaEntity.class))).thenReturn(pessoaResponse);
+        when(pessoaMapper.toPessoaResponse(any(PessoaEntity.class))).thenReturn(pessoaResponse);
 
         PessoaResponse response = service.buscarPorId(1L);
 
@@ -114,7 +117,7 @@ public class PessoaServiceTest {
         PessoaResponse pessoaResponse = createPessoaResponse();
 
         when(pessoaRepository.findAll()).thenReturn(List.of(pessoaEntity));
-        when(mapper.toListPessoaResponse(anyList())).thenReturn(List.of(pessoaResponse));
+        when(pessoaMapper.toListPessoaResponse(anyList())).thenReturn(List.of(pessoaResponse));
 
         List<PessoaResponse> pessoaResponses = service.buscarTodas();
 

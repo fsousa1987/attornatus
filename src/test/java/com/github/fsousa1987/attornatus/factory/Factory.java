@@ -1,7 +1,7 @@
 package com.github.fsousa1987.attornatus.factory;
 
-import com.github.fsousa1987.attornatus.api.request.pessoa.AtualizarPessoaRequest;
 import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
+import com.github.fsousa1987.attornatus.api.request.pessoa.PessoaRequest;
 import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
 import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
 import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
@@ -40,7 +40,7 @@ public class Factory {
                 .build();
     }
 
-    public static SalvarPessoaRequest createSalvarPessoaRequest() {
+    public static PessoaRequest createSalvarPessoaRequest() {
         return SalvarPessoaRequest
                 .builder()
                 .nome("Francisco Sousa")
@@ -81,8 +81,8 @@ public class Factory {
                 .build();
     }
 
-    public static AtualizarPessoaRequest createAtualizarPessoaRequest() {
-        return AtualizarPessoaRequest
+    public static PessoaRequest createAtualizarPessoaRequest() {
+        return PessoaRequest
                 .builder()
                 .nome("Francisco Sousa")
                 .dataNascimento(LocalDate.now().minusYears(23).toString())
