@@ -3,12 +3,13 @@ package com.github.fsousa1987.attornatus.api.request.endereco;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
 
 @Data
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
@@ -29,7 +30,7 @@ public class EnderecoRequest implements Serializable {
     @NotBlank(message = "cidade nao pode estar em branco")
     private String cidade;
 
-    @NotNull(message = "preencha se o endereço é principal")
-    private Boolean isPrincipal;
-
+    public boolean isEnderecoPrincipal() {
+        return false;
+    }
 }

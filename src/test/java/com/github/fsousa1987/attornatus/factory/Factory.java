@@ -3,9 +3,9 @@ package com.github.fsousa1987.attornatus.factory;
 import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
 import com.github.fsousa1987.attornatus.api.request.pessoa.PessoaRequest;
 import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
-import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
-import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
-import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
+import com.github.fsousa1987.attornatus.api.response.endereco.EnderecoLoteResponse;
+import com.github.fsousa1987.attornatus.api.response.endereco.EnderecoResponse;
+import com.github.fsousa1987.attornatus.api.response.pessoa.PessoaResponse;
 import com.github.fsousa1987.attornatus.domain.entity.EnderecoEntity;
 import com.github.fsousa1987.attornatus.domain.entity.PessoaEntity;
 

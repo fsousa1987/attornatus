@@ -2,8 +2,8 @@ package com.github.fsousa1987.attornatus.domain.service;
 
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
 import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
-import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
-import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
+import com.github.fsousa1987.attornatus.api.response.endereco.EnderecoLoteResponse;
+import com.github.fsousa1987.attornatus.api.response.endereco.EnderecoResponse;
 import com.github.fsousa1987.attornatus.core.mapper.EnderecoMapper;
 import com.github.fsousa1987.attornatus.domain.entity.EnderecoEntity;
 import com.github.fsousa1987.attornatus.domain.repository.EnderecoRepository;

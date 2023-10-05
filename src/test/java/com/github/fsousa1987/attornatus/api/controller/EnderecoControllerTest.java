@@ -1,8 +1,8 @@
 package com.github.fsousa1987.attornatus.api.controller;
 
 import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
-import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
-import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
+import com.github.fsousa1987.attornatus.api.response.endereco.EnderecoLoteResponse;
+import com.github.fsousa1987.attornatus.api.response.endereco.EnderecoResponse;
 import com.github.fsousa1987.attornatus.domain.service.impl.EnderecoServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

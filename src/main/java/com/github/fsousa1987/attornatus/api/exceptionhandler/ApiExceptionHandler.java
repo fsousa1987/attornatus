@@ -3,8 +3,8 @@ package com.github.fsousa1987.attornatus.api.exceptionhandler;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.enums.ProblemType;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.EnderecoNaoEncontradoException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoLoteException;
-import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoPrincipalException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
+import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.SemEnderecoPrincipalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -40,6 +41,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return handleValidationInternal(ex, ex.getBindingResult(), headers, status, request);
     }
 
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(@NonNull HttpMessageNotReadableException ex,
+                                                                  @NonNull HttpHeaders headers, @NonNull HttpStatusCode status,
+                                                                  @NonNull WebRequest request) {
+
+        ProblemType problemType = ProblemType.INVALID_DATA;
+        String detail = "O campo data de nascimento está inválido. Preencha corretamente e tente outra vez";
+        Problem problem = createProblemBuilder(status, problemType, detail).build();
+
+        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+    }
+
     @ExceptionHandler(PessoaNaoEncontradaException.class)
     public ResponseEntity<?> handlePessoaNaoEncontradaException(PessoaNaoEncontradaException ex, WebRequest request) {
 
@@ -52,8 +65,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
     }
 
-    @ExceptionHandler(InvalidEnderecoPrincipalException.class)
-    public ResponseEntity<?> handleInvalidEnderecoPrincipalException(InvalidEnderecoPrincipalException ex, WebRequest request) {
+    @ExceptionHandler(SemEnderecoPrincipalException.class)
+    public ResponseEntity<?> handleInvalidEnderecoPrincipalException(SemEnderecoPrincipalException ex, WebRequest request) {
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ProblemType problemType = ProblemType.INVALID_PRINCIPAL_ADDRESS;

@@ -2,7 +2,8 @@ package com.github.fsousa1987.attornatus.api.controller;
 
 import com.github.fsousa1987.attornatus.api.request.pessoa.PessoaRequest;
 import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
-import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
+import com.github.fsousa1987.attornatus.api.response.pessoa.PessoaResponse;
+import com.github.fsousa1987.attornatus.api.response.pessoa.PessoaResponseList;
 import com.github.fsousa1987.attornatus.domain.service.PessoaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -47,9 +47,9 @@ public class PessoaController {
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PessoaResponse>> consultar() {
-        List<PessoaResponse> pessoaResponses = pessoaService.buscarTodas();
-        return ResponseEntity.ok().body(pessoaResponses);
+    public ResponseEntity<PessoaResponseList> consultar() {
+        PessoaResponseList pessoaResponseList = pessoaService.buscarTodas();
+        return ResponseEntity.ok().body(pessoaResponseList);
     }
 
 }

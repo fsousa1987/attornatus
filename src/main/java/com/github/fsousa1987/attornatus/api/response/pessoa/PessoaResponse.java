@@ -1,5 +1,6 @@
-package com.github.fsousa1987.attornatus.api.response;
+package com.github.fsousa1987.attornatus.api.response.pessoa;
 
+import com.github.fsousa1987.attornatus.api.response.endereco.EnderecoResponse;
 import lombok.*;
 
 import java.io.Serial;

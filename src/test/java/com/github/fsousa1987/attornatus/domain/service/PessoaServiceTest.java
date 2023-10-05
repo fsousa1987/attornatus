@@ -1,8 +1,8 @@
 package com.github.fsousa1987.attornatus.domain.service;
 
-import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoPrincipalException;
+import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.SemEnderecoPrincipalException;
 import com.github.fsousa1987.attornatus.api.request.pessoa.PessoaRequest;
-import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
+import com.github.fsousa1987.attornatus.api.response.pessoa.PessoaResponse;
 import com.github.fsousa1987.attornatus.core.mapper.EnderecoMapper;
 import com.github.fsousa1987.attornatus.core.mapper.PessoaMapper;
 import com.github.fsousa1987.attornatus.domain.entity.EnderecoEntity;
@@ -76,7 +76,7 @@ public class PessoaServiceTest {
         PessoaRequest salvarPessoaRequest = createSalvarPessoaRequest();
         salvarPessoaRequest.listaDeEnderecos().get(0).setIsPrincipal(false);
 
-        assertThrows(InvalidEnderecoPrincipalException.class,
+        assertThrows(SemEnderecoPrincipalException.class,
                 () -> service.salvarPessoa(salvarPessoaRequest));
     }
 

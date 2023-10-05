@@ -1,5 +1,6 @@
 package com.github.fsousa1987.attornatus.api.request.pessoa;
 
+import com.github.fsousa1987.attornatus.api.request.endereco.AdicionarEnderecoRequest;
 import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -27,10 +28,10 @@ public class SalvarPessoaRequest extends PessoaRequest implements Serializable {
     @Valid
     @Size(min = 1)
     @NotNull
-    private List<EnderecoRequest> enderecos;
+    private List<AdicionarEnderecoRequest> enderecos;
 
     @Override
-    public List<EnderecoRequest> listaDeEnderecos() {
+    public List<AdicionarEnderecoRequest> listaDeEnderecos() {
         return enderecos;
     }
 }

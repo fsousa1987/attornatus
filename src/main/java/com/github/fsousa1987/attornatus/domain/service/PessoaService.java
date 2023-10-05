@@ -1,9 +1,8 @@
 package com.github.fsousa1987.attornatus.domain.service;
 
 import com.github.fsousa1987.attornatus.api.request.pessoa.PessoaRequest;
-import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
-
-import java.util.List;
+import com.github.fsousa1987.attornatus.api.response.pessoa.PessoaResponse;
+import com.github.fsousa1987.attornatus.api.response.pessoa.PessoaResponseList;
 
 public interface PessoaService {
 
@@ -13,6 +12,6 @@ public interface PessoaService {
 
     PessoaResponse buscarPorId(Long id);
 
-    List<PessoaResponse> buscarTodas();
+    PessoaResponseList buscarTodas();
 
 }
