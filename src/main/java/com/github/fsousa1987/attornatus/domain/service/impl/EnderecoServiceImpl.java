@@ -34,23 +34,35 @@ public class EnderecoServiceImpl implements EnderecoService {
 
         var enderecoEntity = enderecoMapper.map(enderecoRequest, EnderecoEntity.class);
 
+        verificarEnderecoIgual(enderecosAchados, enderecoEntity);
+        verificarEnderecoPrincipal(enderecoEntity, enderecosAchados);
+        PessoaEntity pessoa = setarIdParaPessoa(idPessoa);
+
+        enderecoEntity.setPessoa(pessoa);
+
+        enderecoRepository.save(enderecoEntity);
+
+        return enderecoMapper.map(enderecoEntity, EnderecoResponse.class);
+    }
+
+    private PessoaEntity setarIdParaPessoa(Long idPessoa) {
+        return PessoaEntity.builder()
+                .id(idPessoa)
+                .build();
+    }
+
+    private void verificarEnderecoPrincipal(EnderecoEntity enderecoEntity, List<EnderecoEntity> enderecosAchados) {
+        if (enderecoEntity.getIsPrincipal()) {
+            enderecosAchados.forEach(EnderecoEntity::mudarStatusEnderecoPrincipal);
+        }
+    }
+
+    private void verificarEnderecoIgual(List<EnderecoEntity> enderecosAchados, EnderecoEntity enderecoEntity) {
         enderecosAchados.forEach(enderecoAchado -> {
             if (enderecoEntity.equals(enderecoAchado)) {
                 throw new EnderecoJaCadastradoException("O endereço já está cadastrado");
             }
         });
-
-        if (enderecoEntity.getIsPrincipal()) {
-            enderecosAchados.forEach(EnderecoEntity::mudarStatusEnderecoPrincipal);
-        }
-
-        PessoaEntity pessoaParaSetarAoEndereco = PessoaEntity.builder()
-                .id(idPessoa)
-                .build();
-        enderecoEntity.setPessoa(pessoaParaSetarAoEndereco);
-        enderecoRepository.save(enderecoEntity);
-
-        return enderecoMapper.map(enderecoEntity, EnderecoResponse.class);
     }
 
     @Override
