@@ -85,7 +85,8 @@ public class PessoaServiceImpl implements PessoaService {
 
         var count = enderecos.stream().filter(EnderecoRequest::isEnderecoPrincipal).count();
         if (count != 1) {
-            throw new SemEnderecoPrincipalException("Não foi encontrado endereço principal ou foi encontrado mais do que um");
+            throw new SemEnderecoPrincipalException("Não foi encontrado endereço principal ou " +
+                    "foi encontrado mais do que um");
         }
     }
 

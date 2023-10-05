@@ -6,12 +6,13 @@ import lombok.*;
 import java.io.Serial;
 import java.io.Serializable;
 
-@Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "tb_endereco")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
 public class EnderecoEntity implements Serializable {
 
@@ -40,5 +41,9 @@ public class EnderecoEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "pessoa_id")
     private PessoaEntity pessoa;
+
+    public void mudarStatusEnderecoPrincipal() {
+        this.setIsPrincipal(false);
+    }
 
 }

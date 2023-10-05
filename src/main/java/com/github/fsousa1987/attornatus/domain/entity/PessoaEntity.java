@@ -34,7 +34,8 @@ public class PessoaEntity implements Serializable {
     @OneToMany(
             mappedBy = "pessoa",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
     )
     private List<EnderecoEntity> enderecos = new ArrayList<>();
 
