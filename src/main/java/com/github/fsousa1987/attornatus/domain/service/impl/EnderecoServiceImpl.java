@@ -49,10 +49,10 @@ public class EnderecoServiceImpl implements EnderecoService {
         List<EnderecoEntity> enderecosAchados = buscarPessoaOuFalhar(idPessoa);
 
         var enderecosConvertidos = converterEnderecoRequestEmEnderecoEntity(enderecosRequest);
-        enderecosConvertidos.forEach(EnderecoEntity::mudarStatusEnderecoPrincipal);
         var enderecosElegiveisPersistencia = compararLoteEnderecosIguais(enderecosConvertidos, enderecosAchados);
 
         if (!enderecosElegiveisPersistencia.isEmpty()) {
+            enderecosConvertidos.forEach(EnderecoEntity::mudarStatusEnderecoPrincipal);
             var enderecosSalvos = persistirEnderecosElegiveis(idPessoa, enderecosElegiveisPersistencia);
             montarResponse(enderecosSalvos);
             return enderecoLoteResponse;
