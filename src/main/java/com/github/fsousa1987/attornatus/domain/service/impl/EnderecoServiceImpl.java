@@ -1,6 +1,7 @@
 package com.github.fsousa1987.attornatus.domain.service.impl;
 
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.EnderecoJaCadastradoException;
+import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoLoteException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
 import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
 import com.github.fsousa1987.attornatus.api.response.endereco.EnderecoLoteResponse;
@@ -8,7 +9,6 @@ import com.github.fsousa1987.attornatus.api.response.endereco.EnderecoResponse;
 import com.github.fsousa1987.attornatus.domain.entity.EnderecoEntity;
 import com.github.fsousa1987.attornatus.domain.entity.PessoaEntity;
 import com.github.fsousa1987.attornatus.domain.repository.EnderecoRepository;
-import com.github.fsousa1987.attornatus.domain.repository.PessoaRepository;
 import com.github.fsousa1987.attornatus.domain.service.EnderecoService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,7 +24,6 @@ public class EnderecoServiceImpl implements EnderecoService {
 
     private final EnderecoLoteResponse enderecoLoteResponse;
     private final EnderecoRepository enderecoRepository;
-    private final PessoaRepository pessoaRepository;
     private final ModelMapper enderecoMapper;
 
     @Transactional
@@ -39,10 +38,27 @@ public class EnderecoServiceImpl implements EnderecoService {
         PessoaEntity pessoa = setarIdParaPessoa(idPessoa);
 
         enderecoEntity.setPessoa(pessoa);
-
         enderecoRepository.save(enderecoEntity);
 
         return enderecoMapper.map(enderecoEntity, EnderecoResponse.class);
+    }
+
+    @Transactional
+    @Override
+    public EnderecoLoteResponse adicionarEnderecosEmLote(Long idPessoa, Set<EnderecoRequest> enderecosRequest) {
+        List<EnderecoEntity> enderecosAchados = buscarPessoaOuFalhar(idPessoa);
+
+        var enderecosConvertidos = converterEnderecoRequestEmEnderecoEntity(enderecosRequest);
+        enderecosConvertidos.forEach(EnderecoEntity::mudarStatusEnderecoPrincipal);
+        var enderecosElegiveisPersistencia = compararLoteEnderecosIguais(enderecosConvertidos, enderecosAchados);
+
+        if (!enderecosElegiveisPersistencia.isEmpty()) {
+            var enderecosSalvos = persistirEnderecosElegiveis(idPessoa, enderecosElegiveisPersistencia);
+            montarResponse(enderecosSalvos);
+            return enderecoLoteResponse;
+        }
+
+        throw new InvalidEnderecoLoteException("Não existe endereços novos para adicionar");
     }
 
     private PessoaEntity setarIdParaPessoa(Long idPessoa) {
@@ -65,9 +81,47 @@ public class EnderecoServiceImpl implements EnderecoService {
         });
     }
 
-    @Override
-    public EnderecoLoteResponse adicionarEnderecosEmLote(Long idPessoa, Set<EnderecoRequest> enderecos) {
-        return null;
+    private void montarResponse(List<EnderecoEntity> enderecosSalvos) {
+        var enderecoResponseList = enderecosSalvos
+                .stream()
+                .map(endereco -> enderecoMapper
+                        .map(endereco, EnderecoResponse.class))
+                .toList();
+
+        enderecoLoteResponse.setEnderecos(enderecoResponseList);
+    }
+
+    private List<EnderecoEntity> buscarPessoaOuFalhar(Long idPessoa) {
+        List<EnderecoEntity> enderecosAchados = enderecoRepository.findByPessoaId(idPessoa);
+
+        if (enderecosAchados.isEmpty()) {
+            throw new PessoaNaoEncontradaException("Pessoa não encontrada para o id: " + idPessoa);
+        }
+
+        return enderecosAchados;
+    }
+
+    private List<EnderecoEntity> persistirEnderecosElegiveis(Long idPessoa,
+                                                             List<EnderecoEntity> enderecosElegiveisPersistencia) {
+        var pessoaEntity = setarIdParaPessoa(idPessoa);
+        enderecosElegiveisPersistencia.forEach(enderecoElegivel -> enderecoElegivel.setPessoa(pessoaEntity));
+        return enderecoRepository.saveAll(enderecosElegiveisPersistencia);
+    }
+
+    private List<EnderecoEntity> converterEnderecoRequestEmEnderecoEntity(Set<EnderecoRequest> enderecosRequests) {
+        return enderecosRequests
+                .stream()
+                .map(endereco -> enderecoMapper.map(endereco, EnderecoEntity.class)
+                )
+                .toList();
+    }
+
+    private List<EnderecoEntity> compararLoteEnderecosIguais(List<EnderecoEntity> enderecosConvertidos,
+                                                             List<EnderecoEntity> enderecosAchados) {
+        return enderecosConvertidos
+                .stream()
+                .filter(endereco -> !enderecosAchados.contains(endereco))
+                .toList();
     }
 
     @Override
@@ -85,24 +139,8 @@ public class EnderecoServiceImpl implements EnderecoService {
         return null;
     }
 
-    //    @Transactional
-//    @Override
-//    public EnderecoLoteResponse adicionarEnderecosEmLote(Long idPessoa, Set<EnderecoRequest> enderecosRequest) {
-//        List<EnderecoEntity> enderecosAchados = buscarPessoasOuFalhar(idPessoa);
-//
-//        List<EnderecoEntity> enderecosEntity = new ArrayList<>();
-//        converterEnderecoRequestEmEnderecoEntity(enderecosRequest, enderecosEntity);
-//        PessoaEntity pessoaEntity = extrairPessoaDoEndereco(enderecosAchados);
-//
-//        List<EnderecoEntity> enderecosElegiveisPersistencia = compararEnderecosIguais(enderecosEntity, enderecosAchados);
-//
-//        if (!enderecosElegiveisPersistencia.isEmpty()) {
-//            return processarPersistenciaEnderecosEmLote(enderecosElegiveisPersistencia, pessoaEntity);
-//        }
-//
-//        throw new InvalidEnderecoLoteException("Não existe endereços novos para adicionar");
-//    }
-//
+
+    //
 //    @Transactional(readOnly = true)
 //    @Override
 //    public EnderecoLoteResponse listarEnderecos(Long idPessoa) {
@@ -159,23 +197,7 @@ public class EnderecoServiceImpl implements EnderecoService {
 //        return enderecosAchados.get(0).getPessoa();
 //    }
 //
-    private List<EnderecoEntity> buscarPessoaOuFalhar(Long idPessoa) {
-        List<EnderecoEntity> enderecosAchados = enderecoRepository.findByPessoaId(idPessoa);
 
-        if (enderecosAchados.isEmpty()) {
-            throw new PessoaNaoEncontradaException("Pessoa não encontrada para o id: " + idPessoa);
-        }
-
-        return enderecosAchados;
-    }
-//
-//    private void converterEnderecoRequestEmEnderecoEntity(Set<EnderecoRequest> enderecosRequests, List<EnderecoEntity> enderecos) {
-//        enderecosRequests.forEach(endereco -> enderecos.add(enderecoMapper.toEnderecoEntity(endereco)));
-//    }
-//
-//    private List<EnderecoEntity> compararEnderecosIguais(List<EnderecoEntity> enderecos, List<EnderecoEntity> enderecosAchados) {
-//        return enderecos.stream().filter(endereco -> !enderecosAchados.contains(endereco)).toList();
-//    }
 //
 //    private EnderecoLoteResponse processarPersistenciaEnderecosEmLote(List<EnderecoEntity> enderecosElegiveis, PessoaEntity pessoaEntity) {
 //        enderecosElegiveis.forEach(endereco -> {
