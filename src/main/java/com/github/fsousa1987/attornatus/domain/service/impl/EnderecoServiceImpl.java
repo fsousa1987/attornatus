@@ -92,7 +92,7 @@ public class EnderecoServiceImpl implements EnderecoService {
     }
 
     private List<EnderecoEntity> buscarPessoaOuFalhar(Long idPessoa) {
-        List<EnderecoEntity> enderecosAchados = enderecoRepository.findByPessoaId(idPessoa);
+        var enderecosAchados = enderecoRepository.findByPessoaId(idPessoa);
 
         if (enderecosAchados.isEmpty()) {
             throw new PessoaNaoEncontradaException("Pessoa não encontrada para o id: " + idPessoa);
