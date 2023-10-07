@@ -10,10 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.List;
-
-import static com.github.fsousa1987.attornatus.factory.Factory.createPessoaResponse;
-import static com.github.fsousa1987.attornatus.factory.Factory.createSalvarPessoaRequest;
+import static com.github.fsousa1987.attornatus.factory.Factory.*;
 import static com.github.fsousa1987.attornatus.util.JsonResponse.asJsonString;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.any;
@@ -36,12 +33,14 @@ public class PessoaControllerTest {
     @Test
     @DisplayName("Deve salvar uma pessoa com sucesso")
     public void salvarUmaPessoaComSucesso() throws Exception {
+        var pessoaResponse = createPessoaResponse();
+        var salvarPessoaRequest = createSalvarPessoaRequest();
 
-        given(service.salvarPessoa(any(PessoaRequest.class))).willReturn(createPessoaResponse());
+        given(service.salvarPessoa(any(PessoaRequest.class))).willReturn(pessoaResponse);
 
         var request = MockMvcRequestBuilders
                 .post(PESSOA_URI)
-                .content(asJsonString(createSalvarPessoaRequest()))
+                .content(asJsonString(salvarPessoaRequest))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON);
 
@@ -64,7 +63,9 @@ public class PessoaControllerTest {
     @Test
     @DisplayName("Deve buscar uma pessoa com sucesso")
     public void buscarUmaPessoaComSucesso() throws Exception {
-        given(service.buscarPorId(anyLong())).willReturn(createPessoaResponse());
+        var pessoaResponse = createPessoaResponse();
+
+        given(service.buscarPorId(anyLong())).willReturn(pessoaResponse);
 
         var request = MockMvcRequestBuilders
                 .get(PESSOA_URI.concat("/1"))
@@ -77,7 +78,9 @@ public class PessoaControllerTest {
     @Test
     @DisplayName("Deve buscar todas as pessoas com sucesso")
     public void buscarTodasAsPessoaComSucesso() throws Exception {
-        given(service.buscarTodas()).willReturn(List.of(createPessoaResponse()));
+        var pessoaResponseList = createPessoaResponseList();
+
+        given(service.buscarTodas()).willReturn(pessoaResponseList);
 
         var request = MockMvcRequestBuilders
                 .get(PESSOA_URI)
