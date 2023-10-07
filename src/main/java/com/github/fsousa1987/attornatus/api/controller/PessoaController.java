@@ -24,7 +24,7 @@ public class PessoaController {
 
     @PostMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<PessoaResponse> adicionar(@Valid @RequestBody SalvarPessoaRequest request) {
-        PessoaResponse pessoaResponse = pessoaService.salvarPessoa(request);
+        var pessoaResponse = pessoaService.salvarPessoa(request);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -42,13 +42,13 @@ public class PessoaController {
 
     @GetMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<PessoaResponse> consultar(@PathVariable Long id) {
-        PessoaResponse pessoaResponse = pessoaService.buscarPorId(id);
+        var pessoaResponse = pessoaService.buscarPorId(id);
         return ResponseEntity.ok().body(pessoaResponse);
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<PessoaResponseList> consultar() {
-        PessoaResponseList pessoaResponseList = pessoaService.buscarTodas();
+        var pessoaResponseList = pessoaService.buscarTodas();
         return ResponseEntity.ok().body(pessoaResponseList);
     }
 
