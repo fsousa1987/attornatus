@@ -42,8 +42,4 @@ public class EnderecoEntity implements Serializable {
     @JoinColumn(name = "pessoa_id")
     private PessoaEntity pessoa;
 
-    public void mudarStatusEnderecoPrincipal() {
-        this.setIsPrincipal(false);
-    }
-
 }
