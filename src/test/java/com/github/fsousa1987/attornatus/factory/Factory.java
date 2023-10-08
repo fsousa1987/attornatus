@@ -121,6 +121,7 @@ public class Factory {
                 .cidade("Guarulhos")
                 .logradouro("Rua Thomas Biondillo")
                 .isPrincipal(true)
+                .id(1L)
                 .build();
     }
 
