@@ -1,22 +1,20 @@
 package com.github.fsousa1987.attornatus.domain.service.impl;
 
-import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoPrincipalException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
+import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.SemEnderecoPrincipalException;
 import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
-import com.github.fsousa1987.attornatus.api.request.pessoa.AtualizarPessoaRequest;
-import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
-import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
-import com.github.fsousa1987.attornatus.core.mapper.PessoaMapper;
+import com.github.fsousa1987.attornatus.api.request.pessoa.PessoaRequest;
+import com.github.fsousa1987.attornatus.api.response.pessoa.PessoaResponse;
+import com.github.fsousa1987.attornatus.api.response.pessoa.PessoaResponseList;
 import com.github.fsousa1987.attornatus.domain.entity.PessoaEntity;
 import com.github.fsousa1987.attornatus.domain.repository.EnderecoRepository;
 import com.github.fsousa1987.attornatus.domain.repository.PessoaRepository;
 import com.github.fsousa1987.attornatus.domain.service.PessoaService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +22,14 @@ public class PessoaServiceImpl implements PessoaService {
 
     private final PessoaRepository pessoaRepository;
     private final EnderecoRepository enderecoRepository;
-    private final PessoaMapper pessoaMapper;
+    private final ModelMapper mapper;
 
     @Transactional
     @Override
-    public PessoaResponse salvarPessoa(SalvarPessoaRequest request) {
+    public PessoaResponse salvarPessoa(PessoaRequest request) {
         validarExistenciaEnderecoPrincipal(request);
 
-        var pessoaEntity = pessoaMapper.toPessoaEntity(request);
+        var pessoaEntity = mapper.map(request, PessoaEntity.class);
         var pessoaSalva = pessoaRepository.save(pessoaEntity);
 
         pessoaSalva.getEnderecos().forEach(endereco -> {
@@ -43,29 +41,38 @@ public class PessoaServiceImpl implements PessoaService {
         });
 
         enderecoRepository.saveAll(pessoaSalva.getEnderecos());
-        return pessoaMapper.toPessoaResponse(pessoaSalva);
+        return mapper.map(pessoaSalva, PessoaResponse.class);
     }
 
     @Transactional
     @Override
-    public void atualizarPessoa(Long id, AtualizarPessoaRequest atualizarPessoaRequest) {
-        PessoaEntity pessoaEntity = buscarOuFalhar(id);
-        BeanUtils.copyProperties(atualizarPessoaRequest, pessoaEntity);
+    public void atualizarPessoa(Long id, PessoaRequest request) {
+        var pessoaEntity = buscarOuFalhar(id);
+        BeanUtils.copyProperties(request, pessoaEntity);
         pessoaRepository.save(pessoaEntity);
     }
 
     @Transactional(readOnly = true)
     @Override
     public PessoaResponse buscarPorId(Long id) {
-        PessoaEntity pessoaEntity = buscarOuFalhar(id);
-        return pessoaMapper.toPessoaResponse(pessoaEntity);
+        var pessoaEntity = buscarOuFalhar(id);
+        return mapper.map(pessoaEntity, PessoaResponse.class);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<PessoaResponse> buscarTodas() {
-        List<PessoaEntity> pessoasEntity = pessoaRepository.findAll();
-        return pessoaMapper.toListPessoaResponse(pessoasEntity);
+    public PessoaResponseList buscarTodas() {
+        var pessoasEntity = pessoaRepository.findAll();
+
+        var pessoasList = pessoasEntity
+                .stream()
+                .map(pessoa -> mapper.map(pessoa, PessoaResponse.class))
+                .toList();
+
+        return PessoaResponseList
+                .builder()
+                .pessoas(pessoasList)
+                .build();
     }
 
     private PessoaEntity buscarOuFalhar(Long id) {
@@ -73,12 +80,13 @@ public class PessoaServiceImpl implements PessoaService {
                 .orElseThrow(() -> new PessoaNaoEncontradaException("Pessoa não encontrada para o id: " + id));
     }
 
-    private void validarExistenciaEnderecoPrincipal(SalvarPessoaRequest salvarPessoaRequest) {
-        List<EnderecoRequest> enderecos = salvarPessoaRequest.getEnderecos();
+    private void validarExistenciaEnderecoPrincipal(PessoaRequest salvarPessoaRequest) {
+        var enderecos = salvarPessoaRequest.listaDeEnderecos();
 
-        long count = enderecos.stream().filter(EnderecoRequest::getIsPrincipal).count();
+        var count = enderecos.stream().filter(EnderecoRequest::isEnderecoPrincipal).count();
         if (count != 1) {
-            throw new InvalidEnderecoPrincipalException("Precisa ter um endereço principal");
+            throw new SemEnderecoPrincipalException("Não foi encontrado endereço principal ou " +
+                    "foi encontrado mais do que um");
         }
     }
 

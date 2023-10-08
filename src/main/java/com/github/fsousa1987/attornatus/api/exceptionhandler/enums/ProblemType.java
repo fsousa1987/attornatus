@@ -8,7 +8,9 @@ public enum ProblemType {
     RESOURCE_NOT_FOUND("Recurso não encontrado"),
     INVALID_PRINCIPAL_ADDRESS("Endereço principal inválido"),
     INVALID_LOTE_ADDRESS("Lote de endereços inválido"),
-    INVALID_DATA("Dados inválidos");
+    INVALID_ADDRESS_PROVIDED("Endereço inválido"),
+    INVALID_DATA("Dados inválidos"),
+    MENSAGEM_INCOMPREENSIVEL("Mensagem incompreensível");
 
     private final String title;
 

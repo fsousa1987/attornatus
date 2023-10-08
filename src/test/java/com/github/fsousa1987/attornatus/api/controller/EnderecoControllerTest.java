@@ -1,8 +1,6 @@
 package com.github.fsousa1987.attornatus.api.controller;
 
 import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
-import com.github.fsousa1987.attornatus.api.response.EnderecoLoteResponse;
-import com.github.fsousa1987.attornatus.api.response.EnderecoResponse;
 import com.github.fsousa1987.attornatus.domain.service.impl.EnderecoServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,13 +31,14 @@ public class EnderecoControllerTest {
     @Test
     @DisplayName("Deve adicionar um endereço para a pessoa com sucesso")
     public void adicionarEnderecoParaPessoa() throws Exception {
-        EnderecoResponse enderecoResponse = createEnderecoResponse();
+        var enderecoResponse = createEnderecoResponse();
+        var adicionarEnderecoRequest = createAdicionarEnderecoRequest();
 
         given(service.adicionarEndereco(anyLong(), any(EnderecoRequest.class))).willReturn(enderecoResponse);
 
         var request = MockMvcRequestBuilders
                 .post(ENDERECO_URI.concat("/pessoas/1/inclusao"))
-                .content(asJsonString(createEnderecoRequest()))
+                .content(asJsonString(adicionarEnderecoRequest))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON);
 
@@ -48,9 +47,28 @@ public class EnderecoControllerTest {
     }
 
     @Test
+    @DisplayName("Deve adicionar endereços em lote com sucesso")
+    public void adicionarEnderecosEmLote() throws Exception {
+        var enderecoLoteResponse = createEnderecoLoteResponse();
+        var adicionarEnderecosLoteRequest = createAdicionarEnderecosLoteRequest();
+
+        given(service.adicionarEnderecosEmLote(anyLong(), anySet())).willReturn(enderecoLoteResponse);
+
+        var request = MockMvcRequestBuilders
+                .post(ENDERECO_URI.concat("/pessoas/1/inclusao/lote"))
+                .content(asJsonString(adicionarEnderecosLoteRequest))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON);
+
+        mvc.perform(request).andExpect(status().isCreated())
+                .andExpect(jsonPath("$.enderecos[0].id").isNotEmpty());
+    }
+
+    @Test
     @DisplayName("Deve recuperar todos os endereços de uma pessoa")
     public void recuperarTodosEnderecosPessoa() throws Exception {
-        EnderecoLoteResponse enderecoLoteResponse = createEnderecoLoteResponse();
+        var enderecoLoteResponse = createEnderecoLoteResponse();
+
         given(service.listarEnderecos(anyLong())).willReturn(enderecoLoteResponse);
 
         var request = MockMvcRequestBuilders
@@ -58,6 +76,39 @@ public class EnderecoControllerTest {
                 .accept(APPLICATION_JSON);
 
         mvc.perform(request).andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Deve atualizar um endereço com sucesso")
+    public void atualizarEndereco() throws Exception {
+        var enderecoResponse = createEnderecoResponse();
+        var enderecoRequest = createEnderecoRequest();
+
+        given(service.atualizarEndereco(anyLong(), any(EnderecoRequest.class))).willReturn(enderecoResponse);
+
+        var request = MockMvcRequestBuilders
+                .put(ENDERECO_URI.concat("/1"))
+                .content(asJsonString(enderecoRequest))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON);
+
+        mvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNotEmpty());
+    }
+
+    @Test
+    @DisplayName("Deve alterar o endereço principal com sucesso")
+    public void alterarEnderecoPrincipal() throws Exception {
+        var enderecoResponse = createEnderecoResponse();
+
+        given(service.alterarPrincipal(anyLong())).willReturn(enderecoResponse);
+
+        var request = MockMvcRequestBuilders
+                .put(ENDERECO_URI.concat("/1/alteracao/principal"))
+                .accept(APPLICATION_JSON);
+
+        mvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNotEmpty());
     }
 
 }

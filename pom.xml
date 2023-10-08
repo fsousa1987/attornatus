@@ -17,7 +17,7 @@
         <java.version>17</java.version>
         <snakeyaml.version>2.0</snakeyaml.version>
         <h2database.version>2.2.224</h2database.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <modelmapper.version>3.0.0</modelmapper.version>
     </properties>
     <dependencies>
         <dependency>
@@ -60,14 +60,9 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${mapstruct.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct-processor</artifactId>
-            <version>${mapstruct.version}</version>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>${modelmapper.version}</version>
         </dependency>
     </dependencies>
 

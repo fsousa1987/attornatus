@@ -1,11 +1,8 @@
 package com.github.fsousa1987.attornatus.domain.service;
 
-import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoPrincipalException;
-import com.github.fsousa1987.attornatus.api.request.pessoa.AtualizarPessoaRequest;
-import com.github.fsousa1987.attornatus.api.request.pessoa.SalvarPessoaRequest;
-import com.github.fsousa1987.attornatus.api.response.PessoaResponse;
-import com.github.fsousa1987.attornatus.core.mapper.PessoaMapper;
-import com.github.fsousa1987.attornatus.domain.entity.EnderecoEntity;
+import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.SemEnderecoPrincipalException;
+import com.github.fsousa1987.attornatus.api.response.pessoa.PessoaResponse;
+import com.github.fsousa1987.attornatus.api.response.pessoa.PessoaResponseList;
 import com.github.fsousa1987.attornatus.domain.entity.PessoaEntity;
 import com.github.fsousa1987.attornatus.domain.repository.EnderecoRepository;
 import com.github.fsousa1987.attornatus.domain.repository.PessoaRepository;
@@ -14,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -38,7 +36,7 @@ public class PessoaServiceTest {
     EnderecoRepository enderecoRepository;
 
     @MockBean
-    PessoaMapper mapper;
+    ModelMapper mapper;
 
     @BeforeEach
     public void setUp() {
@@ -48,45 +46,44 @@ public class PessoaServiceTest {
     @Test
     @DisplayName("Deve salvar uma pessoa com sucesso")
     public void salvarUmaPessoaComSucesso() {
-        PessoaEntity pessoaEntity = createPessoaEntity();
-        EnderecoEntity enderecoEntity = createEnderecoEntity();
-        PessoaResponse pessoaResponse = createPessoaResponse();
+        var salvarPessoaRequest = createSalvarPessoaRequest();
+        var pessoaEntity = createPessoaEntity();
+        var pessoaResponse = createPessoaResponse();
 
-        when(mapper.toPessoaEntity(any(SalvarPessoaRequest.class))).thenReturn(pessoaEntity);
-        when(pessoaRepository.save(any(PessoaEntity.class))).thenReturn(createPessoaEntity());
-        when(enderecoRepository.saveAll(anyList())).thenReturn(List.of(enderecoEntity));
-        when(mapper.toPessoaResponse(any(PessoaEntity.class))).thenReturn(pessoaResponse);
+        when(pessoaRepository.save(any(PessoaEntity.class))).thenReturn(pessoaEntity);
+        when(enderecoRepository.saveAll(anyList())).thenReturn(pessoaEntity.getEnderecos());
+        when(mapper.map(salvarPessoaRequest, PessoaEntity.class)).thenReturn(pessoaEntity);
+        when(mapper.map(pessoaEntity, PessoaResponse.class)).thenReturn(pessoaResponse);
 
-        PessoaResponse response = service.salvarPessoa(createSalvarPessoaRequest());
+        pessoaResponse = service.salvarPessoa(salvarPessoaRequest);
 
-        assertThat(response.getId()).isEqualTo(pessoaResponse.getId());
-        assertThat(response.getNome()).isEqualTo(pessoaResponse.getNome());
-        assertThat(response.getDataNascimento()).isEqualTo(pessoaResponse.getDataNascimento());
-        assertFalse(response.getEnderecos().isEmpty());
+        assertThat(pessoaResponse.getId()).isEqualTo(pessoaEntity.getId());
+        assertFalse(pessoaResponse.getEnderecos().isEmpty());
+        verify(pessoaRepository, atLeastOnce()).save(pessoaEntity);
+        verify(enderecoRepository, atLeastOnce()).saveAll(pessoaEntity.getEnderecos());
 
-        verify(pessoaRepository, atLeastOnce()).save(any(PessoaEntity.class));
     }
 
     @Test
     @DisplayName("Deve lançar uma exceção ao tentar salvar uma pessoa sem um endereço principal")
     public void deveLancarUmaExcecaoQuandoAPessoaNaoTemEnderecoPrincipal() {
-        SalvarPessoaRequest salvarPessoaRequest = createSalvarPessoaRequest();
-        salvarPessoaRequest.getEnderecos().get(0).setIsPrincipal(false);
+        var salvarPessoaRequest = createSalvarPessoaRequest();
+        salvarPessoaRequest.listaDeEnderecos().get(0).setIsPrincipal(false);
 
-        assertThrows(InvalidEnderecoPrincipalException.class,
+        assertThrows(SemEnderecoPrincipalException.class,
                 () -> service.salvarPessoa(salvarPessoaRequest));
     }
 
     @Test
     @DisplayName("Deve atualizar uma pessoa com sucesso")
     public void atualizarUmaPessoaComSucesso() {
-        PessoaEntity pessoaEntity = createPessoaEntity();
-        AtualizarPessoaRequest atualizarPessoaRequest = createAtualizarPessoaRequest();
+        var pessoaEntity = createPessoaEntity();
+        var pessoaRequest = createPessoaRequest();
 
         when(pessoaRepository.findById(anyLong())).thenReturn(Optional.of(pessoaEntity));
         when(pessoaRepository.save(any(PessoaEntity.class))).thenReturn(pessoaEntity);
 
-        service.atualizarPessoa(1L, atualizarPessoaRequest);
+        service.atualizarPessoa(1L, pessoaRequest);
 
         verify(pessoaRepository, atLeastOnce()).findById(anyLong());
         verify(pessoaRepository, atLeastOnce()).save(any(PessoaEntity.class));
@@ -95,15 +92,15 @@ public class PessoaServiceTest {
     @Test
     @DisplayName("Deve buscar pessoa pelo id com sucesso")
     public void buscarPessoaPorIdComSucesso() {
-        PessoaEntity pessoaEntity = createPessoaEntity();
-        PessoaResponse pessoaResponse = createPessoaResponse();
+        var pessoaEntity = createPessoaEntity();
+        var pessoaResponse = createPessoaResponse();
 
         when(pessoaRepository.findById(anyLong())).thenReturn(Optional.of(pessoaEntity));
-        when(mapper.toPessoaResponse(any(PessoaEntity.class))).thenReturn(pessoaResponse);
+        when(mapper.map(pessoaEntity, PessoaResponse.class)).thenReturn(pessoaResponse);
 
-        PessoaResponse response = service.buscarPorId(1L);
+        pessoaResponse = service.buscarPorId(1L);
 
-        assertThat(response.getId()).isEqualTo(pessoaEntity.getId());
+        assertThat(pessoaResponse.getId()).isEqualTo(pessoaEntity.getId());
         verify(pessoaRepository, atLeastOnce()).findById(anyLong());
     }
 
@@ -114,12 +111,12 @@ public class PessoaServiceTest {
         PessoaResponse pessoaResponse = createPessoaResponse();
 
         when(pessoaRepository.findAll()).thenReturn(List.of(pessoaEntity));
-        when(mapper.toListPessoaResponse(anyList())).thenReturn(List.of(pessoaResponse));
+        when(mapper.map(pessoaEntity, PessoaResponse.class)).thenReturn(pessoaResponse);
 
-        List<PessoaResponse> pessoaResponses = service.buscarTodas();
+        PessoaResponseList pessoaResponseList = service.buscarTodas();
 
         verify(pessoaRepository, atLeastOnce()).findAll();
-        assertFalse(pessoaResponses.isEmpty());
+        assertFalse(pessoaResponseList.getPessoas().isEmpty());
     }
 
 }

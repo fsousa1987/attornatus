@@ -6,12 +6,13 @@ import lombok.*;
 import java.io.Serial;
 import java.io.Serializable;
 
-@Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "tb_endereco")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
 public class EnderecoEntity implements Serializable {
 

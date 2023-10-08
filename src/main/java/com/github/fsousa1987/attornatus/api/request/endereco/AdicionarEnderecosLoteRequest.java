@@ -16,6 +16,6 @@ public class AdicionarEnderecosLoteRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -6674561873873253800L;
 
-    Set<EnderecoLoteRequest> enderecos;
+    private Set<EnderecoRequest> enderecos;
 
 }

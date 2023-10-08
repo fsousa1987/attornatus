@@ -1,10 +1,9 @@
 package com.github.fsousa1987.attornatus.api.request.pessoa;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.fsousa1987.attornatus.api.request.endereco.AdicionarEnderecoRequest;
-import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,25 +12,28 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class SalvarPessoaRequest extends PessoaRequest implements Serializable {
+@EqualsAndHashCode
+public class PessoaRequest implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = -3040085526585080306L;
+    private static final long serialVersionUID = -8826148077458704971L;
 
-    @Valid
-    @Size(min = 1)
-    @NotNull
-    private List<AdicionarEnderecoRequest> enderecos;
+    @NotBlank(message = "nome é um campo obrigatório")
+    private String nome;
 
-    @Override
+    @NotNull(message = "data de nascimento é um campo obrigatório")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dataNascimento;
+
     public List<AdicionarEnderecoRequest> listaDeEnderecos() {
-        return enderecos;
+        return null;
     }
+
 }
