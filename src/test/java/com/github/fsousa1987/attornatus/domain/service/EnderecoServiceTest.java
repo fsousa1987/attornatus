@@ -1,6 +1,7 @@
 package com.github.fsousa1987.attornatus.domain.service;
 
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.EnderecoJaCadastradoException;
+import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.EnderecoNaoEncontradoException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.InvalidEnderecoLoteException;
 import com.github.fsousa1987.attornatus.api.exceptionhandler.exceptions.PessoaNaoEncontradaException;
 import com.github.fsousa1987.attornatus.api.response.endereco.EnderecoLoteResponse;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.github.fsousa1987.attornatus.factory.Factory.*;
@@ -127,9 +129,8 @@ public class EnderecoServiceTest {
     @Test
     @DisplayName("Deve listar endereços com sucesso")
     public void listarEnderecos() {
-        var enderecoRequest = createEnderecoRequest();
         var enderecoEntity = createEnderecoEntity();
-        EnderecoResponse enderecoResponse = createEnderecoResponse();
+        var enderecoResponse = createEnderecoResponse();
 
         when(enderecoRepository.findByPessoaId(anyLong())).thenReturn(List.of(enderecoEntity));
         when(enderecoMapper.map(enderecoEntity, EnderecoResponse.class)).thenReturn(enderecoResponse);
@@ -138,6 +139,64 @@ public class EnderecoServiceTest {
 
         assertFalse(enderecoLoteResponse.getEnderecos().isEmpty());
         assertThat(enderecoLoteResponse.getEnderecos().get(0).getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Deve alterar endereço principal com sucesso")
+    public void alterarEnderecoPrincipal() {
+        var enderecoEntity = createEnderecoEntity();
+        enderecoEntity.setPessoa(createPessoaEntity());
+        var response = createEnderecoResponse();
+
+        when(enderecoRepository.findById(anyLong())).thenReturn(Optional.of(enderecoEntity));
+        when(enderecoRepository.save(enderecoEntity)).thenReturn(enderecoEntity);
+        when(enderecoMapper.map(enderecoEntity, EnderecoResponse.class)).thenReturn(response);
+
+        var enderecoResponse = service.alterarPrincipal(1L);
+
+        assertThat(enderecoResponse.getId()).isEqualTo(enderecoEntity.getId());
+        assertThat(enderecoResponse.getIsPrincipal()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve lançar uma exceção quando não encontrar um endereço")
+    public void lancarExcecaoQuandoNaoEncontrarEndereco() {
+        when(enderecoRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(EnderecoNaoEncontradoException.class,
+                () -> service.alterarPrincipal(1L));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando o endereço for o mesmo ao atualizar")
+    public void lancarExcecaoQuandoEnderecoForOMesmoAoAtualizar() {
+        var enderecoRequest = createEnderecoRequest();
+        var enderecoEntity = createEnderecoEntity();
+
+        when(enderecoRepository.findById(anyLong())).thenReturn(Optional.of(enderecoEntity));
+        when(enderecoMapper.map(enderecoRequest, EnderecoEntity.class)).thenReturn(enderecoEntity);
+
+        assertThrows(EnderecoJaCadastradoException.class,
+                () -> service.atualizarEndereco(1L, enderecoRequest));
+    }
+
+    @Test
+    @DisplayName("Deve atualizar endereço com sucesso")
+    public void atualizarEndereco() {
+        var enderecoRequest = createEnderecoRequest();
+        var enderecoEntity = createEnderecoEntity();
+        enderecoEntity.setCep("07097-041");
+        var enderecoEntityForMapper = createEnderecoEntity();
+        EnderecoResponse enderecoResponse = createEnderecoResponse();
+
+        when(enderecoRepository.findById(anyLong())).thenReturn(Optional.of(enderecoEntity));
+        when(enderecoMapper.map(enderecoRequest, EnderecoEntity.class)).thenReturn(enderecoEntityForMapper);
+        when(enderecoRepository.save(any(EnderecoEntity.class))).thenReturn(enderecoEntity);
+        when(enderecoMapper.map(enderecoEntity, EnderecoResponse.class)).thenReturn(enderecoResponse);
+
+        EnderecoResponse response = service.atualizarEndereco(1L, enderecoRequest);
+
+        assertThat(response.getId()).isEqualTo(enderecoEntity.getId());
     }
 
 }
