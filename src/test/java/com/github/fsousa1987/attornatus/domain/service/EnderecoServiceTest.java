@@ -155,7 +155,7 @@ public class EnderecoServiceTest {
         var enderecoResponse = service.alterarPrincipal(1L);
 
         assertThat(enderecoResponse.getId()).isEqualTo(enderecoEntity.getId());
-        assertThat(enderecoResponse.getIsPrincipal()).isTrue();
+        assertThat(enderecoResponse.isPrincipal()).isTrue();
     }
 
     @Test

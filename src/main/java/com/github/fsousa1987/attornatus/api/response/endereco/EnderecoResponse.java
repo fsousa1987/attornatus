@@ -21,6 +21,6 @@ public class EnderecoResponse implements Serializable {
     private String cep;
     private Integer numero;
     private String cidade;
-    private Boolean isPrincipal;
+    private boolean isPrincipal;
 
 }

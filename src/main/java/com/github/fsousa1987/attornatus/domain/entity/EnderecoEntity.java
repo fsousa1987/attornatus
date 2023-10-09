@@ -36,7 +36,7 @@ public class EnderecoEntity implements Serializable {
     private String cidade;
 
     @Column(name = "principal")
-    private Boolean isPrincipal;
+    private boolean isPrincipal;
 
     @ManyToOne
     @JoinColumn(name = "pessoa_id")

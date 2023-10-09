@@ -68,7 +68,7 @@ public class PessoaServiceTest {
     @DisplayName("Deve lançar uma exceção ao tentar salvar uma pessoa sem um endereço principal")
     public void deveLancarUmaExcecaoQuandoAPessoaNaoTemEnderecoPrincipal() {
         var salvarPessoaRequest = createSalvarPessoaRequest();
-        salvarPessoaRequest.listaDeEnderecos().get(0).setIsPrincipal(false);
+        salvarPessoaRequest.listaDeEnderecos().get(0).setPrincipal(false);
 
         assertThrows(SemEnderecoPrincipalException.class,
                 () -> service.salvarPessoa(salvarPessoaRequest));

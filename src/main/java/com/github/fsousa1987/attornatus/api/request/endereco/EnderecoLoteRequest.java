@@ -19,6 +19,6 @@ public class EnderecoLoteRequest extends EnderecoRequest implements Serializable
     private static final long serialVersionUID = -8780241178200772086L;
 
     @JsonIgnore
-    private Boolean isPrincipal;
+    private boolean isPrincipal;
 
 }

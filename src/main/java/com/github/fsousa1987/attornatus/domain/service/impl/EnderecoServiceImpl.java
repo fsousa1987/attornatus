@@ -53,7 +53,6 @@ public class EnderecoServiceImpl implements EnderecoService {
         var enderecosElegiveisPersistencia = processarEnderecosElegiveis(enderecosRequest, enderecosAchados);
 
         if (!enderecosElegiveisPersistencia.isEmpty()) {
-            enderecosElegiveisPersistencia.forEach(EnderecoEntity::desassociarEnderecoPrincipal);
             var enderecosSalvos = persistirEnderecosElegiveis(idPessoa, enderecosElegiveisPersistencia);
             montarResponse(enderecosSalvos);
             return enderecoLoteResponse;
@@ -76,7 +75,7 @@ public class EnderecoServiceImpl implements EnderecoService {
         var enderecoAchado = buscarEnderecoOuFalhar(idEndereco);
 
         var enderecos = enderecoAchado.getPessoa().getEnderecos();
-        enderecos.stream().filter(EnderecoEntity::getIsPrincipal).forEach(EnderecoEntity::desassociarEnderecoPrincipal);
+        enderecos.stream().filter(EnderecoEntity::isPrincipal).forEach(EnderecoEntity::desassociarEnderecoPrincipal);
 
         enderecoAchado.associarEnderecoPrincipal();
         var enderecoAtualizado = enderecoRepository.save(enderecoAchado);
@@ -107,7 +106,7 @@ public class EnderecoServiceImpl implements EnderecoService {
     }
 
     private void verificarEnderecoPrincipal(EnderecoEntity enderecoEntity, List<EnderecoEntity> enderecosAchados) {
-        if (enderecoEntity.getIsPrincipal()) {
+        if (enderecoEntity.isPrincipal()) {
             enderecosAchados.forEach(EnderecoEntity::desassociarEnderecoPrincipal);
         }
     }
