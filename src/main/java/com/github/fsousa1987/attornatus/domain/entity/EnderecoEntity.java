@@ -42,4 +42,12 @@ public class EnderecoEntity implements Serializable {
     @JoinColumn(name = "pessoa_id")
     private PessoaEntity pessoa;
 
+    public void desassociarEnderecoPrincipal() {
+        this.isPrincipal = false;
+    }
+
+    public void associarEnderecoPrincipal() {
+        this.isPrincipal = true;
+    }
+
 }
