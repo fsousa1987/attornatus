@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(EnderecoController.class)
 public class EnderecoControllerTest {
 
-    static String ENDERECO_URI = "/api/v1/enderecos";
+    static final String ENDERECO_URI = "/api/v1/enderecos";
 
     @Autowired
     MockMvc mvc;

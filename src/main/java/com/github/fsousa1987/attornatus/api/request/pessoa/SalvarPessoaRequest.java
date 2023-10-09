@@ -1,7 +1,6 @@
 package com.github.fsousa1987.attornatus.api.request.pessoa;
 
 import com.github.fsousa1987.attornatus.api.request.endereco.AdicionarEnderecoRequest;
-import com.github.fsousa1987.attornatus.api.request.endereco.EnderecoRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

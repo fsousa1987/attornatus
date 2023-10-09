@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(PessoaController.class)
 public class PessoaControllerTest {
 
-    static String PESSOA_URI = "/api/v1/pessoas";
+    static final String PESSOA_URI = "/api/v1/pessoas";
 
     @Autowired
     MockMvc mvc;
